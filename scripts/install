@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+# This script compiles from scratch a Node.js executable and its needed
+# libraries and shell utils to offer a Node.js REPL from cold boot
+
+set +h
+umask 022
+LC_ALL=POSIX
+unset CFLAGS
+
+GRN="\e[32m"
+CLR="\e[0m"
+
+
+NUM_JOBS=$((`nproc` + 1))
+
+HOST=$(echo ${MACHTYPE} | sed "s/-[^-]*/-cross/")
+TARGET=i686-nodeos-linux-musl
+CPU=i686
+ARCH="x86"
+
+CLFS=`pwd`
+SOURCES=`pwd`/sources
+OBJECTS=`pwd`/obj/$CPU
+OUT_DIR=`pwd`/out/$CPU
+PATH=${CLFS}/cross-tools/bin:/bin:/usr/bin
+
+MAKE="make --jobs=$NUM_JOBS"
+
+export LC_ALL CLFS PATH
+export HOST TARGET CPU ARCH
+export NUM_JOBS SOURCES OBJECTS OUT_DIR TOOLS MAKE
+
+mkdir -p   cross-tools/${TARGET}     &&
+ln -sfnv . cross-tools/${TARGET}/usr || exit 1
+
+
+scripts/install-pass1.sh || exit $?
+#scripts/install-pass1.sh &&
+#scripts/install-pass2.sh || exit $?
+
+
+echo -e "${GRN}Successfully built cross-toolchain for '$CPU'${CLR}"
