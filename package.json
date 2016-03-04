@@ -18,9 +18,8 @@
     "strip": "bin/strip"
   },
   "scripts": {
-    "install": "scripts/build",
+    "install": "scripts/preinstall && scripts/build",
     "postinstall": "scripts/postinstall",
-    "preinstall": "scripts/preinstall",
     "test": "scripts/test",
     "unbuild": "scripts/unbuild"
   },
@@ -35,6 +34,6 @@
   "license": "MIT",
   "dependencies": {
     "download-manager": "^0.0.15",
-    "fs-extra": "^0.26.0"
+    "fs-extra": "^0.26.5"
   }
 }
