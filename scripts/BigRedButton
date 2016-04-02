@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+#
+# Build cross toolchain for all supported platforms
+#
+
+PLATFORM=pc_qemu_32 npm run build || exit 1
+PLATFORM=pc_qemu_64 npm run build || exit 2
+
+#
+# Pack toolchain in a node-gyp compatible way
+#
+
+mkdir -p prebuilds                                &&
+tar -cf - out | gzip > prebuilds/linux-x64.tar.gz || exit 3
+
+#
+# Upload release to GitHub
+#
+
+if [ "$GITHUB_TOKEN" ]; then
+  prebuild --upload-all $GITHUB_TOKEN || exit 4
+fi
