@@ -1,3 +1,7 @@
 deps/
 obj/
 node_modules/
+out/
+bin/
+npm-debug.log
+prebuilds/

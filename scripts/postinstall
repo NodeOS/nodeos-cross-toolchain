@@ -18,7 +18,34 @@ source scripts/adjustEnvVars.sh || exit $?
 $TARGET-strip --strip-debug    $TOOLS/{,$TARGET}/lib/* &>> /dev/null
 $TARGET-strip --strip-unneeded $TOOLS/{,$TARGET}/bin/* &>> /dev/null
 
+$TARGET-strip --strip-unneeded $TOOLS/libexec/gcc/$TARGET/*/*{,/*} &>> /dev/null
+
 rm -rf $TOOLS/{,share}/{info,man,doc}
+
+
+#
+# Symbolic links for native platform binaries
+#
+
+PLATFORM=
+CPU=
+
+source scripts/adjustEnvVars.sh || exit $?
+
+mkdir -p bin || exit 10
+
+ln -sf ../out/$TARGET/bin/ld.bfd      \
+       ../out/$TARGET/bin/as          \
+       ../out/$TARGET/bin/ranlib      \
+       ../out/$TARGET/bin/strip       \
+       ../out/$TARGET/bin/ar          \
+       ../out/$TARGET/bin/nm          \
+       ../out/$TARGET/bin/gcc         \
+       ../out/$TARGET/bin/ld          \
+       ../out/$TARGET/bin/objdump     \
+       ../out/$TARGET/bin/c++         \
+       ../out/$TARGET/bin/g++         \
+       ../out/$TARGET/bin/objcopy bin || exit 11
 
 
 echo -e "${GRN}Successfully built a $TARGET cross-toolchain${CLR}"

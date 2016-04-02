@@ -1,12 +1,26 @@
 {
   "name": "nodeos-cross-toolchain",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Cross-toolchain to build NodeOS based on Compressed Linux From Scratch Embedded",
   "main": "./out",
+  "bin": {
+    "ar": "bin/ar",
+    "as": "bin/as",
+    "c++": "bin/c++",
+    "g++": "bin/g++",
+    "gcc": "bin/gcc",
+    "ld": "bin/ld",
+    "ld.bfd": "bin/ld.bfd",
+    "nm": "bin/nm",
+    "objcopy": "bin/objcopy",
+    "objdump": "bin/objdump",
+    "ranlib": "bin/ranlib",
+    "strip": "bin/strip"
+  },
   "scripts": {
-    "install": "scripts/build",
-    "postinstall": "scripts/postinstall",
-    "preinstall": "scripts/preinstall",
+    "BigRedButton": "scripts/BigRedButton",
+    "build": "scripts/preinstall && scripts/build && scripts/postinstall",
+    "install": "prebuild --download https://github.com/NodeOS/nodeos-cross-toolchain/releases/download/{version}/{platform}-{arch}.tar.gz",
     "test": "scripts/test",
     "unbuild": "scripts/unbuild"
   },
@@ -15,12 +29,19 @@
     "CLFS",
     "embedded",
     "toolchain",
-    "cross"
+    "cross",
+    "gcc",
+    "musl",
+    "linux",
+    "binutils"
   ],
   "author": "Jesús Leganés Combarro \"piranna\" <piranna@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "prebuild": "piranna/prebuild"
+  },
+  "devDpendencies": {
     "download-manager": "^0.0.15",
-    "fs-extra": "^0.26.0"
+    "fs-extra": "^0.26.5"
   }
 }
