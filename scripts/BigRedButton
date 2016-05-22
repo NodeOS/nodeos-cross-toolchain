@@ -1,4 +1,6 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
+
+. scripts/adjustEnvVars.sh
 
 #
 # Build cross toolchain for all supported platforms
@@ -11,8 +13,8 @@ PLATFORM=pc_qemu_64 npm run build || exit 2
 # Pack toolchain in a node-gyp compatible way
 #
 
-mkdir -p prebuilds                                &&
-tar -cf - out | gzip > prebuilds/linux-x64.tar.gz || exit 3
+mkdir -p prebuilds                                       &&
+tar -cf - out | gzip > prebuilds/linux-$NODE_ARCH.tar.gz || exit 3
 
 #
 # Upload release to GitHub
