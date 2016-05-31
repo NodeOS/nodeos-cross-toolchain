@@ -10,17 +10,35 @@ unset CFLAGS
 
 
 DEPS=`pwd`/deps
-TOOLS=`pwd`/out
+OUT_DIR=`pwd`
 
 source scripts/adjustEnvVars.sh || exit $?
 
 
-mkdir -p  $TOOLS/$TARGET     &&
-ln -sfn . $TOOLS/$TARGET/usr || exit 1
+mkdir -p  $TARGET     &&
+ln -sfn . $TARGET/usr || exit 1
 
 if [[ $BITS = 64 ]]; then
-  ln -sfn lib $TOOLS/$TARGET/lib64 || exit 2
+  ln -sfn lib $TARGET/lib64 || exit 2
 fi
+
+
+# Clean object dir and return the input error
+function err(){
+  rmStep $STEP_DIR
+  exit $1
+}
+
+
+#
+# Define steps paths
+#
+
+KERNEL_HEADERS=$OUT_DIR/$TARGET/include/linux
+OBJ_BINUTILS=$OBJECTS/binutils
+OBJ_GCC_STATIC=$OBJECTS/gcc_static
+OBJ_MUSL=$OBJECTS/musl
+OBJ_GCC_FINAL=$OBJECTS/gcc_final
 
 
 #
@@ -28,18 +46,20 @@ fi
 #
 
 SRC_DIR=$DEPS/linux
-OBJ_DIR=$TOOLS/$TARGET/include/linux
+STEP_DIR=$KERNEL_HEADERS
 
-if [[ ! -d $OBJ_DIR ]]; then
+if [[ ! -d $STEP_DIR ]]; then
   echo -e "${WHT}Extracting Linux headers${CLR}"
+
+  rmStep $OBJ_BINUTILS
 
   (
     cd $SRC_DIR
 
     # Extract headers
-    $MAKE mrproper                                                   &&
-    $MAKE ARCH=$ARCH headers_check                                   &&
-    $MAKE ARCH=$ARCH INSTALL_HDR_PATH=$TOOLS/$TARGET headers_install || exit 10
+    $MAKE mrproper                                                     &&
+    $MAKE ARCH=$ARCH headers_check                                     &&
+    $MAKE ARCH=$ARCH INSTALL_HDR_PATH=$OUT_DIR/$TARGET headers_install || exit 10
   ) || err $?
 
   echo -e "${GRN}Successfully extracted Linux headers${CLR}"
@@ -51,25 +71,26 @@ fi
 #
 
 SRC_DIR=$DEPS/binutils
-OBJ_DIR=$OBJECTS/binutils
+STEP_DIR=$OBJ_BINUTILS
 
-if [[ ! -d $OBJ_DIR ]]; then
+if [[ ! -d $STEP_DIR ]]; then
   echo -e "${WHT}Compiling binutils${CLR}"
 
-  mkdir -p $OBJ_DIR || exit 20
+  rmStep $OBJ_GCC_STATIC
 
   (
-    cd $OBJ_DIR
+    mkdir -p $STEP_DIR &&
+    cd       $STEP_DIR || exit 20
 
     # Configure
-    $SRC_DIR/configure                \
-        --silent                      \
-        --prefix=$TOOLS               \
-        --target=$TARGET              \
-        --with-sysroot=$TOOLS/$TARGET \
-        --disable-werror              \
-        --disable-nls                 \
-        --disable-multilib            || exit 21
+    $SRC_DIR/configure                  \
+        --silent                        \
+        --prefix=$OUT_DIR               \
+        --target=$TARGET                \
+        --with-sysroot=$OUT_DIR/$TARGET \
+        --disable-werror                \
+        --disable-nls                   \
+        --disable-multilib              || exit 21
 
     # Compile
     $MAKE configure-host && $MAKE || exit 22
@@ -87,27 +108,25 @@ fi
 #
 
 SRC_DIR=$DEPS/gcc
-OBJ_DIR=$OBJECTS/gcc
+STEP_DIR=$OBJ_GCC_STATIC
 
-if [[ ! -d $OBJ_DIR ]]; then
+if [[ ! -d $STEP_DIR ]]; then
   echo -e "${WHT}Compiling GCC static${CLR}"
 
-  mkdir -p $OBJ_DIR || exit 30
-
-  # Remove old musl object files
-  rm -rf $OBJECTS/musl || exit 31
+  rmStep $OBJ_MUSL
 
   (
-    cd $OBJ_DIR
+    mkdir -p $STEP_DIR &&
+    cd       $STEP_DIR || exit 30
 
     # Configure
     $SRC_DIR/configure                        \
         --silent                              \
-        --prefix=$TOOLS                       \
+        --prefix=$OUT_DIR                     \
         --build=$HOST                         \
         --host=$HOST                          \
         --target=$TARGET                      \
-        --with-sysroot=$TOOLS/$TARGET         \
+        --with-sysroot=$OUT_DIR/$TARGET       \
         --disable-nls                         \
         --disable-shared                      \
         --disable-target-libsanitizer         \
@@ -139,7 +158,7 @@ if [[ ! -d $OBJ_DIR ]]; then
 
   # Remove object files to allow generation of final version
   # [ToDo] Check if we can be able to generate them on different folders
-  rm -rf $OBJ_DIR || exit 35
+#  rm -rf $STEP_DIR || exit 35
 
   echo -e "${GRN}Successfully compiled GCC static${CLR}"
 fi
@@ -150,15 +169,18 @@ fi
 #
 
 SRC_DIR=$DEPS/musl
-OBJ_DIR=$OBJECTS/musl
+STEP_DIR=$OBJ_MUSL
 
-if [[ ! -d $OBJ_DIR ]]; then
+if [[ ! -d $STEP_DIR ]]; then
   echo -e "${WHT}Compiling musl${CLR}"
 
-  mkdir -p $OBJ_DIR || exit 40
+  rmStep $OBJ_GCC_FINAL
 
   (
-#    cd $OBJ_DIR
+    PATH=`pwd`/bin:$PATH  # Use the just generated cross-compiler ONLY for musl
+
+    mkdir -p $STEP_DIR || exit 40
+#    cd $STEP_DIR
     cd $SRC_DIR && $MAKE clean  # musl don't support out-of-tree builds yet
 
     # Configure
@@ -173,7 +195,7 @@ if [[ ! -d $OBJ_DIR ]]; then
     CROSS_COMPILE="$TARGET-" $MAKE || exit 42
 
     # Install
-    DESTDIR=$TOOLS/$TARGET $MAKE install || exit 43
+    DESTDIR=$OUT_DIR/$TARGET $MAKE install || exit 43
   ) || err $?
 
   echo -e "${GRN}Successfully compiled musl${CLR}"
@@ -185,24 +207,23 @@ fi
 #
 
 SRC_DIR=$DEPS/gcc
-OBJ_DIR=$OBJECTS/gcc
+STEP_DIR=$OBJ_GCC_FINAL
 
-if [[ ! -d $OBJ_DIR ]]; then
+if [[ ! -d $STEP_DIR ]]; then
   echo -e "${WHT}Compiling GCC final${CLR}"
 
-  mkdir -p $OBJ_DIR || exit 50
-
   (
-    cd $OBJ_DIR
+    mkdir -p $STEP_DIR &&
+    cd       $STEP_DIR || exit 50
 
     # Configure
     $SRC_DIR/configure                        \
         --silent                              \
-        --prefix=$TOOLS                       \
+        --prefix=$OUT_DIR                     \
         --build=$HOST                         \
         --host=$HOST                          \
         --target=$TARGET                      \
-        --with-sysroot=$TOOLS/$TARGET         \
+        --with-sysroot=$OUT_DIR/$TARGET       \
         --disable-nls                         \
         --disable-static                      \
         --enable-c99                          \
@@ -230,4 +251,21 @@ if [[ ! -d $OBJ_DIR ]]; then
 fi
 
 
-rm -rf $TOOLS/include || exit 60
+#
+# Remove empty includes and generated docs
+#
+
+rm -rf include                 &&
+rm -rf {,share}/{info,man,doc} || exit 60
+
+
+#
+# Strip libraries and binaries
+#
+
+strip --strip-debug    {,$TARGET/}lib/* &>> /dev/null
+strip --strip-unneeded {,$TARGET/}bin/* &>> /dev/null
+
+strip --strip-unneeded libexec/gcc/$TARGET/*/*{,/*} &>> /dev/null
+
+exit 0  # Ignore errors from `strip`

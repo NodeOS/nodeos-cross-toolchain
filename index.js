@@ -1,1 +1,1 @@
-module.exports = __dirname + '/out'
+module.exports = __dirname

@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 
-. scripts/adjustEnvVars.sh
+source scripts/adjustEnvVars.sh
+
+
+#
+# Define steps paths
+#
+
+PRODUCTS=(bin lib libexec share *-nodeos-linux-musl)
+PREBUILD=prebuilds/linux-$NODE_ARCH.tar.gz
+
 
 #
 # Build cross toolchain for all supported platforms
@@ -9,12 +18,16 @@
 PLATFORM=pc_qemu_32 npm run build || exit 1
 PLATFORM=pc_qemu_64 npm run build || exit 2
 
+
 #
 # Pack toolchain in a node-gyp compatible way
 #
 
-mkdir -p prebuilds                                       &&
-tar -cf - out | gzip > prebuilds/linux-$NODE_ARCH.tar.gz || exit 3
+STEP_DIR=$PREBUILD
+
+mkdir -p prebuilds                          &&
+tar -cf - ${PRODUCTS[@]} | gzip > $PREBUILD || err 3
+
 
 #
 # Upload release to GitHub

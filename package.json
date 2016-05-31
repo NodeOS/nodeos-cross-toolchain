@@ -3,23 +3,35 @@
   "version": "0.0.1",
   "description": "Cross-toolchain to build NodeOS based on Compressed Linux From Scratch Embedded",
   "bin": {
+    "addr2line": "bin/addr2line",
     "ar": "bin/ar",
     "as": "bin/as",
-    "c++": "bin/c++",
-    "g++": "bin/g++",
-    "gcc": "bin/gcc",
+    "c++filt": "bin/c++filt",
+    "elfedit": "bin/elfedit",
+    "gprof": "bin/gprof",
     "ld": "bin/ld",
     "ld.bfd": "bin/ld.bfd",
     "nm": "bin/nm",
     "objcopy": "bin/objcopy",
     "objdump": "bin/objdump",
     "ranlib": "bin/ranlib",
-    "strip": "bin/strip"
+    "readelf": "bin/readelf",
+    "size": "bin/size",
+    "strings": "bin/strings",
+    "strip": "bin/strip",
+    "c++": "bin/c++",
+    "cpp": "bin/cpp",
+    "g++": "bin/g++",
+    "gcc": "bin/gcc",
+    "gcov": "bin/gcov",
+    "gcov-tool": "bin/gcov-tool"
   },
   "scripts": {
     "BigRedButton": "scripts/BigRedButton",
-    "build": "scripts/preinstall && scripts/build && scripts/postinstall",
+    "build": "scripts/preinstall && scripts/build",
     "install": "prebuild-install --download https://github.com/NodeOS/nodeos-cross-toolchain/releases/download/v{version}/{platform}-{arch}.tar.gz || npm run build",
+    "postinstall": "scripts/postinstall",
+    "prepublish": "rm -rf bin/*-nodeos-linux-musl-* && truncate --size 0 bin/*",
     "test": "scripts/test",
     "unbuild": "scripts/unbuild"
   },
@@ -34,13 +46,14 @@
     "linux",
     "binutils"
   ],
-  "author": "Jesús Leganés Combarro \"piranna\" <piranna@gmail.com>",
+  "author": "Jesús Leganés Combarro 'piranna' <piranna@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "prebuild": "piranna/prebuild-install#WIP_aux"
+    "prebuild-install": "^1.0.2"
   },
-  "devDpendencies": {
-    "download-manager": "^0.0.15",
-    "fs-extra": "^0.26.5"
+  "devDependencies": {
+    "download-manager": "^0.0.20",
+    "fs-extra": "^0.30.0",
+    "prebuild": "^4.2.1"
   }
 }

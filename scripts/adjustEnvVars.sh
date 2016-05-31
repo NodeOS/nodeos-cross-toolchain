@@ -139,22 +139,20 @@ fi
 
 
 # Auxiliar variables
-OBJECTS=`pwd`/obj/$CPU
-OUT_DIR=`pwd`/out/$CPU
-
-if [[ $TOOLS ]]; then
-  TOOLS=`realpath -s $TOOLS`
-fi
-PATH=$TOOLS/bin:/bin:/usr/bin
+OBJECTS=`pwd`/build/$CPU
 
 MAKE1="make ${SILENT:=--silent LIBTOOLFLAGS=--silent V=}"
 MAKE="$MAKE1 --jobs=$JOBS"
 
 
+function rmStep(){
+  rm -rf "$@"
+  rmdir -p --ignore-fail-on-non-empty `dirname "$@"`
+}
+
 # Clean object dir and return the input error
 function err(){
   echo -e "${RED}Error compiling '${OBJ_DIR}'${CLR}"
-  rm -rf $OBJ_DIR
-  rmdir -p --ignore-fail-on-non-empty `dirname $OBJ_DIR`
+  rmStep $OBJ_DIR
   exit $1
 }

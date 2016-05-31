@@ -1,6 +1,10 @@
+build/
 deps/
-obj/
 node_modules/
-out/
 npm-debug.log
 prebuilds/
+
+lib/
+libexec/
+share/
+*-nodeos-linux-musl/

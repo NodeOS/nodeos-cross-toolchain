@@ -1,3 +1,5 @@
 #!/usr/bin/env sh
 
-rm -rf deps/ obj/ out/
+rm -rf build/ deps/
+rm -rf bin/*-nodeos-linux-musl-* lib/ libexec/ share/ *-nodeos-linux-musl/
+truncate --size 0 bin/*
