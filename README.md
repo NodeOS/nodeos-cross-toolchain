@@ -7,3 +7,6 @@ by setting some optional environment variables:
 
 - **PLATFORM**: by default it will generate for the current system
 - **CPU**: by default it will generate for the current CPU
+
+This `bin` folder contain placeholders for `npm` during the install step. They
+will be replaced later during the install process to their correct symlinks.
