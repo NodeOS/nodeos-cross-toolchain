@@ -1,4 +1,4 @@
-#!/usr-env bash
+#!/usr/bin/env bash
 
 #
 # Symbolic links for native platform binaries
@@ -12,27 +12,27 @@ source scripts/adjustEnvVars.sh || exit $?
 mkdir -p bin || exit 10
 
 # Binutils
-ln -sf $TARGET-addr2line addr2line &&
-       $TARGET-ar        ar        &&
-       $TARGET-as        as        &&
-       $TARGET-c++filt   c++filt   &&
-       $TARGET-elfedit   elfedit   &&
-       $TARGET-gprof     gprof     &&
-       $TARGET-ld        ld        &&
-       $TARGET-ld.bfd    ld.bfd    &&
-       $TARGET-nm        nm        &&
-       $TARGET-objcopy   objcopy   &&
-       $TARGET-objdump   objdump   &&
-       $TARGET-ranlib    ranlib    &&
-       $TARGET-readelf   readelf   &&
-       $TARGET-size      size      &&
-       $TARGET-strings   strings   &&
-       $TARGET-strip     strip     || exit 11
+ln -sf $TARGET-addr2line bin/addr2line &&
+ln -sf $TARGET-ar        bin/ar        &&
+ln -sf $TARGET-as        bin/as        &&
+ln -sf $TARGET-c++filt   bin/c++filt   &&
+ln -sf $TARGET-elfedit   bin/elfedit   &&
+ln -sf $TARGET-gprof     bin/gprof     &&
+ln -sf $TARGET-ld        bin/ld        &&
+ln -sf $TARGET-ld.bfd    bin/ld.bfd    &&
+ln -sf $TARGET-nm        bin/nm        &&
+ln -sf $TARGET-objcopy   bin/objcopy   &&
+ln -sf $TARGET-objdump   bin/objdump   &&
+ln -sf $TARGET-ranlib    bin/ranlib    &&
+ln -sf $TARGET-readelf   bin/readelf   &&
+ln -sf $TARGET-size      bin/size      &&
+ln -sf $TARGET-strings   bin/strings   &&
+ln -sf $TARGET-strip     bin/strip     || exit 11
 
 # GCC
-ln -sf $TARGET-c++       c++       &&
-       $TARGET-cpp       cpp       &&
-       $TARGET-g++       g++       &&
-       $TARGET-gcc       gcc       &&
-       $TARGET-gcov      gcov      &&
-       $TARGET-gcov-tool gcov-tool || exit 12
+ln -sf $TARGET-c++       bin/c++       &&
+ln -sf $TARGET-cpp       bin/cpp       &&
+ln -sf $TARGET-g++       bin/g++       &&
+ln -sf $TARGET-gcc       bin/gcc       &&
+ln -sf $TARGET-gcov      bin/gcov      &&
+ln -sf $TARGET-gcov-tool bin/gcov-tool || exit 12
