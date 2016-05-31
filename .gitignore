@@ -8,3 +8,5 @@ lib/
 libexec/
 share/
 *-nodeos-linux-musl/
+
+bin/*-nodeos-linux-musl-*
