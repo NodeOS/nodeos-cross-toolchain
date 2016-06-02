@@ -54,6 +54,6 @@
   "devDependencies": {
     "download-manager": "^0.0.20",
     "fs-extra": "^0.30.0",
-    "prebuild": "^4.2.1"
+    "prebuild": "^4.2.2"
   }
 }
