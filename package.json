@@ -31,7 +31,7 @@
     "build": "scripts/preinstall && scripts/build",
     "install": "prebuild-install --download https://github.com/NodeOS/nodeos-cross-toolchain/releases/download/v{version}/{platform}-{arch}.tar.gz || npm run build",
     "postinstall": "scripts/postinstall",
-    "prepublish": "rm -rf bin/*-nodeos-linux-musl-* && truncate --size 0 bin/*",
+    "prepublish": "scripts/prepublish",
     "test": "scripts/test",
     "unbuild": "scripts/unbuild"
   },
