@@ -49,11 +49,11 @@
   "author": "Jesús Leganés Combarro 'piranna' <piranna@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "prebuild-install": "^1.0.2"
+    "prebuild-install": "1.0.2"
   },
   "devDependencies": {
     "download-manager": "^0.0.20",
     "fs-extra": "^0.30.0",
-    "prebuild": "^4.2.1"
+    "prebuild": "^4.2.2"
   }
 }
