@@ -25,8 +25,17 @@ PLATFORM=pc_qemu_64 npm run build || exit 2
 
 STEP_DIR=$PREBUILD
 
+# Delete symlinks stubs
+(
+  cd bin || exit 10
+  rm `node -p "Object.keys(require('./package.json').bin).join(' ')"` || exit 11
+) || exit $?
+
 mkdir -p prebuilds                          &&
-tar -cf - ${PRODUCTS[@]} | gzip > $PREBUILD || err 3
+tar -cf - ${PRODUCTS[@]} | gzip > $PREBUILD || err 12
+
+# Re-create symlinks stubs
+scripts/postinstall || exit 13
 
 
 #
@@ -34,5 +43,5 @@ tar -cf - ${PRODUCTS[@]} | gzip > $PREBUILD || err 3
 #
 
 if [ "$GITHUB_TOKEN" ]; then
-  prebuild --upload-all $GITHUB_TOKEN || exit 4
+  prebuild --upload-all $GITHUB_TOKEN || exit 20
 fi
