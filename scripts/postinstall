@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
 
+set -o pipefail
+
+
+# If host platform is not based on musl, don't create un-prefixed symlinks
+readlink /lib/ld-linux.so.2 | grep musl || exit 0
+
+
 #
-# Symbolic links for native platform binaries
+# Create symbolic links for native platform binaries
 #
 
 PLATFORM=
