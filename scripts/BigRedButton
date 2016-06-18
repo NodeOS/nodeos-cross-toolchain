@@ -11,6 +11,10 @@ PRODUCTS=(bin lib libexec share *-nodeos-linux-musl)
 PREBUILD=prebuilds/linux-$NODE_ARCH.tar.gz
 
 
+# Clean products previously to create them
+rm -rf ${PRODUCTS[@]} || exit 11
+
+
 #
 # Build cross toolchain for all supported platforms
 #
@@ -24,12 +28,6 @@ PLATFORM=pc_qemu_64 npm run build || exit 2
 #
 
 STEP_DIR=$PREBUILD
-
-# Delete symlinks stubs
-(
-  cd bin || exit 10
-  rm `node -p "Object.keys(require('./package.json').bin).join(' ')"` || exit 11
-) || exit $?
 
 mkdir -p prebuilds                          &&
 tar -cf - ${PRODUCTS[@]} | gzip > $PREBUILD || err 12
