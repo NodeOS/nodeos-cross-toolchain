@@ -28,9 +28,10 @@
   },
   "scripts": {
     "BigRedButton": "scripts/BigRedButton",
-    "build": "scripts/preinstall && scripts/build",
-    "install": "prebuild-install --download https://github.com/NodeOS/nodeos-cross-toolchain/releases/download/v{version}/{platform}-{arch}.tar.gz || npm run build",
+    "build": "scripts/build",
+    "install": "prebuild-install -d https://github.com/NodeOS/nodeos-cross-toolchain/releases/download/v{version}/{platform}-{arch}.tar.gz || npm run build",
     "postinstall": "scripts/postinstall",
+    "prebuild": "scripts/prebuild",
     "prepublish": "scripts/prepublish",
     "test": "scripts/test",
     "unbuild": "scripts/unbuild"
