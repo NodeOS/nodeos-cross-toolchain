@@ -1,3 +1,5 @@
+[![Build Status](https://semaphoreci.com/api/v1/nodeos/nodeos-cross-toolchain/branches/master/shields_badge.svg)](https://semaphoreci.com/nodeos/nodeos-cross-toolchain)
+
 # NodeOS cross toolchain
 
 This package generate a cross-compiler based on [gcc](https://gcc.gnu.org/) and
