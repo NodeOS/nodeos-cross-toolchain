@@ -3,6 +3,21 @@
 set -o pipefail
 
 
+SYMLINKS=(addr2line ar as c++filt elfedit gprof ld ld.bfd nm objcopy objdump \
+          ranlib readelf size strings strip c++ cpp g++ gcc gcov gcov-tool)
+
+
+# Delete symlinks stubs
+
+(
+  mkdir -p bin || exit 10
+
+  cd bin
+
+  rm ${SYMLINKS[@]} || exit 11
+) || exit $?
+
+
 # If host platform is not based on musl, don't create un-prefixed symlinks
 readlink /lib/ld-linux.so.2 | grep musl || exit 0
 
@@ -16,30 +31,34 @@ CPU=
 
 source scripts/adjustEnvVars.sh || exit $?
 
-mkdir -p bin || exit 10
+(
+  mkdir -p bin || exit 20
 
-# Binutils
-ln -sf $TARGET-addr2line bin/addr2line &&
-ln -sf $TARGET-ar        bin/ar        &&
-ln -sf $TARGET-as        bin/as        &&
-ln -sf $TARGET-c++filt   bin/c++filt   &&
-ln -sf $TARGET-elfedit   bin/elfedit   &&
-ln -sf $TARGET-gprof     bin/gprof     &&
-ln -sf $TARGET-ld        bin/ld        &&
-ln -sf $TARGET-ld.bfd    bin/ld.bfd    &&
-ln -sf $TARGET-nm        bin/nm        &&
-ln -sf $TARGET-objcopy   bin/objcopy   &&
-ln -sf $TARGET-objdump   bin/objdump   &&
-ln -sf $TARGET-ranlib    bin/ranlib    &&
-ln -sf $TARGET-readelf   bin/readelf   &&
-ln -sf $TARGET-size      bin/size      &&
-ln -sf $TARGET-strings   bin/strings   &&
-ln -sf $TARGET-strip     bin/strip     || exit 11
+  cd bin
 
-# GCC
-ln -sf $TARGET-c++       bin/c++       &&
-ln -sf $TARGET-cpp       bin/cpp       &&
-ln -sf $TARGET-g++       bin/g++       &&
-ln -sf $TARGET-gcc       bin/gcc       &&
-ln -sf $TARGET-gcov      bin/gcov      &&
-ln -sf $TARGET-gcov-tool bin/gcov-tool || exit 12
+  # Binutils
+  ln -sf $TARGET-addr2line addr2line &&
+  ln -sf $TARGET-ar        ar        &&
+  ln -sf $TARGET-as        as        &&
+  ln -sf $TARGET-c++filt   c++filt   &&
+  ln -sf $TARGET-elfedit   elfedit   &&
+  ln -sf $TARGET-gprof     gprof     &&
+  ln -sf $TARGET-ld        ld        &&
+  ln -sf $TARGET-ld.bfd    ld.bfd    &&
+  ln -sf $TARGET-nm        nm        &&
+  ln -sf $TARGET-objcopy   objcopy   &&
+  ln -sf $TARGET-objdump   objdump   &&
+  ln -sf $TARGET-ranlib    ranlib    &&
+  ln -sf $TARGET-readelf   readelf   &&
+  ln -sf $TARGET-size      size      &&
+  ln -sf $TARGET-strings   strings   &&
+  ln -sf $TARGET-strip     strip     || exit 21
+
+  # GCC
+  ln -sf $TARGET-c++       c++       &&
+  ln -sf $TARGET-cpp       cpp       &&
+  ln -sf $TARGET-g++       g++       &&
+  ln -sf $TARGET-gcc       gcc       &&
+  ln -sf $TARGET-gcov      gcov      &&
+  ln -sf $TARGET-gcov-tool gcov-tool || exit 22
+) || exit $?

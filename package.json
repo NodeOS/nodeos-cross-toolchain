@@ -56,5 +56,14 @@
     "download-manager": "^0.0.20",
     "fs-extra": "^0.30.0",
     "prebuild": "^4.2.2"
-  }
+  },
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NodeOS/nodeos-cross-toolchain.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NodeOS/nodeos-cross-toolchain/issues"
+  },
+  "homepage": "https://github.com/NodeOS/nodeos-cross-toolchain#readme"
 }
