@@ -14,7 +14,7 @@ SYMLINKS=(addr2line ar as c++filt elfedit gprof ld ld.bfd nm objcopy objdump \
 
   cd bin
 
-  rm ${SYMLINKS[@]} || exit 11
+  rm -f ${SYMLINKS[@]} || exit 11
 ) || exit $?
 
 
