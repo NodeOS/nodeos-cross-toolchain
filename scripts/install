@@ -9,17 +9,10 @@ SYMLINKS=(addr2line ar as c++filt elfedit gprof ld ld.bfd nm objcopy objdump \
 
 
 #
-# Delete symlinks stubs
-#
-
-rm -rf bin || exit 10
-
-
-#
 # Download or build cross-toolchain
 #
 
-prebuild-install -d $DOWNLOAD || npm run build || exit 20
+prebuild-install -d $DOWNLOAD || npm run build || exit 10
 
 
 # If host platform is not based on musl, don't create un-prefixed symlinks
@@ -27,7 +20,7 @@ readlink /lib/ld-linux.so.2 | grep musl || exit 0
 
 
 #
-# Create symbolic links for native platform binaries
+# Update the bypass symbolic links to point to the native platform binaries
 #
 
 PLATFORM=
