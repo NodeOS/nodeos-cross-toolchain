@@ -1,6 +1,6 @@
 {
   "name": "nodeos-cross-toolchain",
-  "version": "1.0.0-RC2",
+  "version": "1.0.0-RC2.1",
   "description": "Cross-toolchain to build NodeOS based on Compressed Linux From Scratch Embedded",
   "bin": {
     "addr2line": "bin/addr2line",
@@ -29,8 +29,7 @@
   "scripts": {
     "BigRedButton": "scripts/BigRedButton",
     "build": "scripts/build",
-    "install": "prebuild-install -d https://github.com/NodeOS/nodeos-cross-toolchain/releases/download/v{version}/{platform}-{arch}.tar.gz || npm run build",
-    "postinstall": "scripts/postinstall",
+    "install": "scripts/install",
     "prebuild": "scripts/prebuild",
     "prepublish": "scripts/prepublish",
     "test": "scripts/test",
