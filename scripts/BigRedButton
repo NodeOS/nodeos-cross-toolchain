@@ -32,9 +32,6 @@ STEP_DIR=$PREBUILD
 mkdir -p prebuilds                          &&
 tar -cf - ${PRODUCTS[@]} | gzip > $PREBUILD || err 12
 
-# Re-create symlinks stubs
-scripts/postinstall || exit 13
-
 
 #
 # Upload release to GitHub
