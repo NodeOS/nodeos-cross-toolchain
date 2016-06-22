@@ -21,7 +21,7 @@ function onExit(code, signal)
 
 for(var index in PATH)
 {
-  const fullCommand = path.join(PATH[index], command)
+  var fullCommand = path.join(PATH[index], command)
 
   try
   {
