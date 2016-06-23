@@ -9,4 +9,4 @@ libexec/
 share/
 *-nodeos-linux-musl/
 
-bin/
+bin/*-nodeos-linux-musl-*

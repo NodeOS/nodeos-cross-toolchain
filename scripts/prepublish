@@ -17,20 +17,9 @@ if(npm_config_argv && JSON.parse(npm_config_argv).original[0] === 'publish')
   {
     if(err && err.code !== 'EEXIST') throw err
 
-    fs.readdir(DIR, function(err, files)
+    // Re-create the symlinks stubs
+    bins.forEach(function(file)
     {
-      if(err) throw err
-
-      // Delete all files in the `bin` folder
-      files.forEach(function(file)
-      {
-        fs.unlinkSync(DIR+'/'+file)
-      })
-
-      // Re-create the symlinks stubs
-      bins.forEach(function(file)
-      {
-        fs.writeFileSync(DIR+'/'+file, bypass, {mode: 0o555})
-      })
+      fs.writeFileSync(DIR+'/'+file, bypass, {mode: 0o555})
     })
   })
