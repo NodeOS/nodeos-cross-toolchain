@@ -1,6 +1,6 @@
 {
   "name": "nodeos-cross-toolchain",
-  "version": "1.0.0-RC2.9",
+  "version": "1.0.0-RC2.10",
   "description": "Cross-toolchain to build NodeOS based on Compressed Linux From Scratch Embedded",
   "bin": {
     "addr2line": "bin/addr2line",

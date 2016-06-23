@@ -20,6 +20,6 @@ if(npm_config_argv && JSON.parse(npm_config_argv).original[0] === 'publish')
     // Re-create the symlinks stubs
     bins.forEach(function(file)
     {
-      fs.writeFileSync(DIR+'/'+file, bypass, {mode: 0o555})
+      fs.writeFileSync(DIR+'/'+file, bypass, {mode: 0o755})
     })
   })
