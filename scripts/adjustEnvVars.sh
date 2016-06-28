@@ -4,6 +4,7 @@ RED="\e[31m"
 GRN="\e[32m"
 WHT="\e[37m"
 CLR="\e[0m"
+NWL="\n"
 
 # Platform aliases
 case $PLATFORM in
@@ -147,12 +148,11 @@ MAKE="$MAKE1 --jobs=$JOBS"
 
 function rmStep(){
   rm -rf "$@"
-  rmdir -p --ignore-fail-on-non-empty `dirname "$@"`
 }
 
 # Clean object dir and return the input error
 function err(){
-  echo -e "${RED}Error compiling '${OBJ_DIR}'${CLR}"
+  printf "${RED}Error compiling '${OBJ_DIR}'${CLR}${NWL}"
   rmStep $OBJ_DIR
   exit $1
 }
