@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set +h
+
 # Clean object dir and return the input error
 function err(){
   rm -rf $DEPS_GLIBC
