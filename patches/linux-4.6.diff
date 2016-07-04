@@ -1,0 +1,22 @@
+--- Makefile
++++ Makefile
+@@ -305,6 +305,19 @@
+ 		-Wno-missing-field-initializers -fno-delete-null-pointer-checks
+ endif
+ 
++ifeq ($(shell uname), Darwin)
++HOSTCFLAGS   += -I../glibc -Wmacro-redefined -Wsometimes-uninitialized         \
++  -Wshift-negative-value -Wextended-offsetof -Wdeprecated-declarations         \
++  -Wbitwise-op-parentheses -Wunused-value -Wparentheses -Wtautological-compare \
++  -Wkeyword-macro -Wformat-security -Wchar-subscripts -Wmismatched-tags        \
++  -Wc99-extensions
++HOSTCXXFLAGS += -I../glibc -Wmacro-redefined -Wsometimes-uninitialized         \
++  -Wshift-negative-value -Wextended-offsetof -Wdeprecated-declarations         \
++  -Wbitwise-op-parentheses -Wunused-value -Wparentheses -Wtautological-compare \
++  -Wkeyword-macro -Wformat-security -Wchar-subscripts -Wmismatched-tags        \        
++  -Wc99-extensions
++endif
++
+ # Decide whether to build built-in, modular, or both.
+ # Normally, just do built-in.
+ 

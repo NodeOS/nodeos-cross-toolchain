@@ -39,7 +39,7 @@ const GCC_PATCH_URL = 'https://raw.githubusercontent.com/GregorR/musl-cross/mast
 
 
 // Patch Linux to use GLIBC headers
-const LINUX_PATCH_URL = 'https://raw.githubusercontent.com/joshgarde/nodeos-kernel-headers/master/linux-'+LINUX_VERSION+'.diff'
+const LINUX_PATCH_PATH = 'patches/linux-'+LINUX_VERSION+'.diff'
 
 //
 // gcc prerequisites
@@ -222,7 +222,7 @@ var downloads =
   {
     name: 'linux',
     url: LINUX_URL,
-    patch: LINUX_PATCH_URL,
+    patch: LINUX_PATCH_PATH,
     sha256: LINUX_SHA256
   },
   {
