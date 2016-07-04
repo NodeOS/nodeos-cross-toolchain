@@ -2,7 +2,7 @@ os:
   - linux
   - osx
 osx_image: xcode7.3
-sudo: false
+sudo: required
 language: node_js
 node_js:
   - "4.4.6"
