@@ -1,12 +1,9 @@
 os:
-  - linux
   - osx
 osx_image: xcode7.3
 sudo: required
-dist: trusty
 language: node_js
 node_js:
-  - "4.4.6"
   - "6.2.2"
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then hdiutil create -type SPARSE -fs 'Case-sensitive Journaled HFS+' -size 10g -volname build ../build.dmg ; fi
@@ -18,4 +15,3 @@ install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gnu-sed --with-default-names ; fi
 script:
   - npm install --ignore-scripts
-  - npm run BigRedButton
