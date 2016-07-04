@@ -7,6 +7,10 @@ language: node_js
 node_js:
   - "4.4.6"
   - "6.2.2"
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then hdiutil create -type SPARSE -fs 'Case-sensitive Journaled HFS+' -size 5g -volname build -srcfolder . build.dmg ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then hdiutil attach build.dmg ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd /Volumes/build ; fi
 install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install binutils ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gnu-sed --with-default-names ; fi
