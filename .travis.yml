@@ -1,0 +1,16 @@
+os:
+  - linux
+  - osx
+osx_image: xcode7.3
+sudo: required
+language: node_js
+node_js:
+  - "4.4.6"
+  - "6.2.2"
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install binutils ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew info binutils; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gnu-sed ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew info gnu-sed; fi
+script:
+  - npm install
