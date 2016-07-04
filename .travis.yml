@@ -8,8 +8,8 @@ node_js:
   - "4.4.6"
   - "6.2.2"
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then hdiutil create -fs 'Case-sensitive Journaled HFS+' -size 5g -volname build -srcfolder . build.dmg ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then hdiutil attach -readwrite build.dmg ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then hdiutil create -fs 'Case-sensitive Journaled HFS+' -volname build -srcfolder . build.dmg ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo hdiutil attach -readwrite build.dmg ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd /Volumes/build ; fi
 install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install binutils ; fi
