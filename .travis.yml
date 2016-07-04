@@ -3,22 +3,19 @@ os:
   - osx
 osx_image: xcode7.3
 sudo: required
+dist: trusty
 language: node_js
 node_js:
   - "4.4.6"
   - "6.2.2"
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then hdiutil create -type SPARSE -fs 'Case-sensitive Journaled HFS+' -size 10g -volname build ../build.dmg ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then hdiutil attach ../build.dmg.sparseimage ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cp -r $TRAVIS_BUILD_DIR/* /Volumes/build ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd /Volumes/build ; fi
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install g++-4.8 ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install binutils ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gnu-sed --with-default-names ; fi
 script:
   - npm install --ignore-scripts
-  - travis_wait 70 npm run BigRedButton
+  - npm run BigRedButton
