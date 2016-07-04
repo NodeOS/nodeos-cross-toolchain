@@ -11,4 +11,6 @@ install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install binutils ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gnu-sed --with-default-names ; fi
 script:
-  - npm run build
+  - npm install
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm run unbuild ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm run build ; fi
