@@ -19,53 +19,8 @@ if [[ $(uname -s) = "Darwin" ]]; then
   )
 
   port -q install gsed || err $?
+  ln -s /opt/local/bin/gsed /usr/local/bin/sed  || err $?
 
-  ln -s /opt/local/bin/gsed /usr/local/bin/sed
-
-  GLIBC_VERSION=2.23
-  GLIBC_TAR=glibc-$GLIBC_VERSION.tar.gz
-  GLIBC_URL=http://ftpmirror.gnu.org/glibc/$GLIBC_TAR
-
-  INCLUDE=/usr/local/include
-  BASE=`pwd`
-  DEPS=$BASE/deps
-  DEPS_GLIBC=$DEPS/glibc-$GLIBC_VERSION
-
-  rm -rf $DEPS_GLIBC
-
-  cd $DEPS
-  curl -LO $GLIBC_URL || err $?
-  tar xfz $GLIBC_TAR || err $?
-
-  rm -r $GLIBC_TAR
-  cd $DEPS_GLIBC
-
-  mkdir -p $INCLUDE/elf || err $?
-  mkdir -p $INCLUDE/bits || err $?
-  mkdir -p $INCLUDE/string || err $?
-  mkdir -p $INCLUDE/gnu || err $?
-
-  cp include/elf.h $INCLUDE || err $?
-  cp elf/elf.h $INCLUDE/elf || err $?
-  cp sysdeps/generic/dl-dtprocnum.h $INCLUDE || err $?
-
-  cp include/features.h $INCLUDE || err $?
-  cp include/gnu/stubs.h $INCLUDE/gnu || err $?
-
-  cp include/stdc-predef.h $INCLUDE || err $?
-
-  cp include/byteswap.h $INCLUDE || err $?
-  cp string/byteswap.h $INCLUDE/string || err $?
-  cp sysdeps/x86/bits/byteswap.h $INCLUDE/bits || err $?
-  cp sunrpc/rpc/types.h $INCLUDE/bits || err $?
-  cp sysdeps/x86/bits/byteswap-16.h $INCLUDE/bits || err $?
-  cp sysdeps/x86/bits/wordsize.h $INCLUDE/bits || err $?
-
-  cp include/endian.h $INCLUDE || err $?
-  cp string/endian.h $INCLUDE/string || err $?
-  cp sysdeps/x86/bits/endian.h $INCLUDE/bits || err $?
-
-  rm -rf $DEPS_GLIBC
-
-  echo "done."
+  port -q install binutils || err $?
+  ln -s /opt/local/bin/gstrip /usr/local/bin/strip  || err $?
 fi
