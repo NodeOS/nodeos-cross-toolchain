@@ -1,3 +1,6 @@
+# While Travis Support has been implemented for OSX, it does not fully build
+# due to the build time limit and the vast ammount of warnings generated
+
 os:
   - osx
 osx_image: xcode7.3

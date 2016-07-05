@@ -39,7 +39,7 @@ const GCC_PATCH_URL = 'https://raw.githubusercontent.com/GregorR/musl-cross/mast
 
 
 // Patch Linux to use GLIBC headers
-const LINUX_PATCH_PATH = 'patches/linux-'+LINUX_VERSION+'.diff'
+const LINUX_PATCH_PATH = 'patches/linux/linux-'+LINUX_VERSION+'.diff'
 
 //
 // gcc prerequisites

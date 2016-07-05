@@ -8,7 +8,7 @@ source scripts/adjustEnvVars.sh
 #
 
 PRODUCTS=(bin lib libexec share *-nodeos-linux-musl)
-PREBUILD=prebuilds/linux-$NODE_ARCH.tar.gz
+PREBUILD=prebuilds/$KERNEL_NAME-$NODE_ARCH.tar.gz
 
 
 # Clean products previously to create them

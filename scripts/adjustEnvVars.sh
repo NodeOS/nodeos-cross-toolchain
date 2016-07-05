@@ -145,6 +145,7 @@ OBJECTS=`pwd`/build/$CPU
 MAKE1="make ${SILENT:=--silent LIBTOOLFLAGS=--silent V=}"
 MAKE="$MAKE1 --jobs=$JOBS"
 
+KERNEL_NAME=$(uname -s)
 
 function rmStep(){
   rm -rf "$@"
