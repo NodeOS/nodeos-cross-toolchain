@@ -231,7 +231,7 @@ var downloads =
   }
 ]
 
-if (os.platform() == 'darwin') {
+if (process.platform == 'darwin') {
   downloads.push({
     name: 'glibc-temp',
     url: GLIBC_URL,
