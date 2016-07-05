@@ -5,16 +5,14 @@
  endif
  
 +ifeq ($(shell uname), Darwin)
-+HOSTCFLAGS   += -I../glibc -Wmacro-redefined -Wsometimes-uninitialized         \
-+  -Wshift-negative-value -Wextended-offsetof -Wdeprecated-declarations         \
-+  -Wbitwise-op-parentheses -Wunused-value -Wparentheses -Wtautological-compare \
-+  -Wkeyword-macro -Wformat-security -Wchar-subscripts -Wmismatched-tags        \
-+  -Wc99-extensions
-+HOSTCXXFLAGS += -I../glibc -Wmacro-redefined -Wsometimes-uninitialized         \
-+  -Wshift-negative-value -Wextended-offsetof -Wdeprecated-declarations         \
-+  -Wbitwise-op-parentheses -Wunused-value -Wparentheses -Wtautological-compare \
-+  -Wkeyword-macro -Wformat-security -Wchar-subscripts -Wmismatched-tags        \        
-+  -Wc99-extensions
++HOSTCFLAGS += -I../glibc -Wmacro-redefined -Wsometimes-uninitialized                        \
++		-Wc99-extensions -Wextended-offsetof -Wdeprecated-declarations               \
++		-Wbitwise-op-parentheses -Wunused-value -Wparentheses -Wtautological-compare \
++		-Wkeyword-macro -Wformat-security -Wchar-subscripts -Wmismatched-tags
++HOSTCXXFLAGS += -I../glibc -Wmacro-redefined -Wsometimes-uninitialized                      \
++		-Wc99-extensions -Wextended-offsetof -Wdeprecated-declarations               \
++		-Wbitwise-op-parentheses -Wunused-value -Wparentheses -Wtautological-compare \
++		-Wkeyword-macro -Wformat-security -Wchar-subscripts -Wmismatched-tags
 +endif
 +
  # Decide whether to build built-in, modular, or both.
