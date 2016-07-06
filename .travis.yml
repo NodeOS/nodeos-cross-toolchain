@@ -1,0 +1,20 @@
+# While Travis Support has been implemented for OSX, it does not fully build
+# due to the build time limit and the vast ammount of warnings generated
+
+os:
+  - osx
+osx_image: xcode7.3
+sudo: required
+language: node_js
+node_js:
+  - "6.2.2"
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then hdiutil create -type SPARSE -fs 'Case-sensitive Journaled HFS+' -size 10g -volname build ../build.dmg ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then hdiutil attach ../build.dmg.sparseimage ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cp -r $TRAVIS_BUILD_DIR/* /Volumes/build ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd /Volumes/build ; fi
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install binutils ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gnu-sed --with-default-names ; fi
+script:
+  - npm install

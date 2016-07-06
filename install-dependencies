@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set +h
+
+#
+# Applies OSX "dependencies" needed to compile the linux kernel
+#
+
+if [[ $(uname -s) = "Darwin" ]]; then
+  command -v port >/dev/null ||
+  (
+    echo "MacPorts is not installed" &&
+    echo "Please visit https://www.macports.org/ for more information" &&
+    exit 40
+  )
+
+  port -q install gsed || exit $?
+  ln -s /opt/local/bin/gsed /usr/local/bin/sed  || exit $?
+
+  port -q install binutils || exit $?
+  ln -s /opt/local/bin/gstrip /usr/local/bin/strip  || exit $?
+fi

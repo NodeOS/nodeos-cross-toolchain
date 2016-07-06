@@ -2,8 +2,10 @@
 
 var join = require('path').join
 
+var async   = require('async')
 var fs      = require('fs-extra')
 var manager = require('download-manager')
+var os      = require('os')
 
 
 const DEPS='deps'
@@ -15,6 +17,7 @@ const BINUTILS_VERSION = "2.26"
 const GCC_VERSION      = "5.3.0"
 const LINUX_VERSION    = "4.6"
 const MUSL_VERSION     = "1.1.14"
+const GLIBC_VERSION    = "2.23"
 
 
 // Source URLs
@@ -23,6 +26,7 @@ const BINUTILS_URL = "http://ftpmirror.gnu.org/binutils/binutils-"+BINUTILS_VERS
 const GCC_URL      = "http://ftpmirror.gnu.org/gcc/gcc-"+GCC_VERSION+"/gcc-"+GCC_VERSION+".tar.gz"
 const LINUX_URL    = "https://www.kernel.org/pub/linux/kernel/v4.x/linux-"+LINUX_VERSION+".tar.gz"
 const MUSL_URL     = "http://www.musl-libc.org/releases/musl-"+MUSL_VERSION+".tar.gz"
+const GLIBC_URL    = "http://ftpmirror.gnu.org/glibc/glibc-"+GLIBC_VERSION+".tar.gz"
 
 
 // Checksums
@@ -31,8 +35,11 @@ const LINUX_SHA256 = 'cca08a5bba56d38dd94332f3927d52889231184ba20081f0bf612d3298
 
 
 // Patch GCC to work with musl
-const PATCH_URL = 'https://raw.githubusercontent.com/GregorR/musl-cross/master/patches/gcc-'+GCC_VERSION+'-musl.diff'
+const GCC_PATCH_URL = 'https://raw.githubusercontent.com/GregorR/musl-cross/master/patches/gcc-'+GCC_VERSION+'-musl.diff'
 
+
+// Patch Linux to use GLIBC headers
+const LINUX_PATCH_PATH = 'patches/linux/linux-'+LINUX_VERSION+'.diff'
 
 //
 // gcc prerequisites
@@ -76,23 +83,122 @@ function download_prerequisites(callback)
   ]
 
 
-  manager(downloads, function(error)
-  {
-    if(error) return callback(error)
+  manager(downloads, callback)
+}
 
-    // Check system headers
-    fs.exists('/usr/include/rpc/types.h', function(exists)
-    {
-      if(exists) return callback()
+//
+// include glibc headers in linux
+//
 
-      fs.mkdir('/usr/include/rpc', function(error)
-      {
-        if(error) return callback(error)
+function copy_headers(callback) {
 
-        fs.copy('sunrpc/rpc/*.h', '/usr/include/rpc', callback)
-      })
-    })
-  })
+  const GLIBC_PATH = 'deps/glibc'
+  const TEMP_PATH = 'deps/glibc-temp'
+
+  async.series([
+    function(callback) {
+      async.parallel([
+        function(callback) { fs.mkdirp(GLIBC_PATH+'/bits', callback) },
+        function(callback) { fs.mkdirp(GLIBC_PATH+'/elf', callback) },
+        function(callback) { fs.mkdirp(GLIBC_PATH+'/gnu', callback) },
+        function(callback) { fs.mkdirp(GLIBC_PATH+'/string', callback) }
+      ], callback)
+    },
+    function(callback) {
+      async.parallel([
+        function(callback) {
+          fs.copy(TEMP_PATH+'/elf/elf.h',
+            GLIBC_PATH+'/elf/elf.h',
+            callback
+          )
+        },
+        function(callback) {
+          fs.copy(TEMP_PATH+'/string/byteswap.h',
+            GLIBC_PATH+'/byteswap.h',
+            callback
+          )
+        },
+        function(callback) {
+          fs.copy(TEMP_PATH+'/include/elf.h',
+            GLIBC_PATH+'/elf.h',
+            callback
+          )
+        },
+        function(callback) {
+          fs.copy(TEMP_PATH+'/include/endian.h',
+            GLIBC_PATH+'/endian.h',
+            callback
+          )
+        },
+        function(callback) {
+          fs.copy(TEMP_PATH+'/include/features.h',
+            GLIBC_PATH+'/features.h',
+            callback
+          )
+        },
+        function(callback) {
+          fs.copy(TEMP_PATH+'/include/gnu/stubs.h',
+            GLIBC_PATH+'/gnu/stubs.h',
+            callback
+          )
+        },
+        function(callback) {
+          fs.copy(TEMP_PATH+'/include/stdc-predef.h',
+            GLIBC_PATH+'/stdc-predef.h',
+            callback
+          )
+        },
+        function(callback) {
+          fs.copy(TEMP_PATH+'/string/endian.h',
+            GLIBC_PATH+'/string/endian.h',
+            callback
+          )
+        },
+        function(callback) {
+          fs.outputFile(GLIBC_PATH+'/bits/types.h',
+            '',
+            callback
+          )
+        },
+        function(callback) {
+          fs.copy(TEMP_PATH+'/bits/typesizes.h',
+            GLIBC_PATH+'/bits/typesizes.h',
+            callback
+          )
+        },
+        function(callback) {
+          fs.copy(TEMP_PATH+'/sysdeps/generic/dl-dtprocnum.h',
+            GLIBC_PATH+'/dl-dtprocnum.h',
+            callback
+          )
+        },
+        function(callback) {
+          fs.copy(TEMP_PATH+'/sysdeps/x86/bits/byteswap-16.h',
+            GLIBC_PATH+'/bits/byteswap-16.h',
+            callback
+          )
+        },
+        function(callback) {
+          fs.copy(TEMP_PATH+'/sysdeps/x86/bits/byteswap.h',
+          GLIBC_PATH+'/bits/byteswap.h',
+          callback
+          )
+        },
+        function(callback) {
+          fs.copy(TEMP_PATH+'/sysdeps/x86/bits/endian.h',
+            GLIBC_PATH+'/bits/endian.h',
+            callback
+          )
+        },
+        function(callback) {
+          fs.copy(TEMP_PATH+'/sysdeps/x86/bits/wordsize.h',
+            GLIBC_PATH+'/bits/wordsize.h',
+            callback
+          )
+        }
+      ], callback)
+    },
+  ], callback)
 }
 
 
@@ -109,13 +215,14 @@ var downloads =
   {
     name: 'gcc',
     url: GCC_URL,
-    patch: PATCH_URL,
+    patch: GCC_PATCH_URL,
     strip: 1,
     action: download_prerequisites
   },
   {
     name: 'linux',
     url: LINUX_URL,
+    patch: LINUX_PATCH_PATH,
     sha256: LINUX_SHA256
   },
   {
@@ -124,8 +231,16 @@ var downloads =
   }
 ]
 
+if (process.platform == 'darwin') {
+  downloads.push({
+    name: 'glibc-temp',
+    url: GLIBC_URL,
+    action: copy_headers
+  })
+}
+
 
 manager(downloads, function(error)
 {
-  if(error) throw error;
+  if(error) throw error
 })

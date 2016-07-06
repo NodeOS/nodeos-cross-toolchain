@@ -1,0 +1,14 @@
+--- Makefile
++++ Makefile
+@@ -305,6 +305,11 @@
+ 		-Wno-missing-field-initializers -fno-delete-null-pointer-checks
+ endif
+ 
++ifeq ($(shell uname), Darwin)
++HOSTCFLAGS += -I../glibc
++HOSTCXXFLAGS += -I../glibc
++endif
++
+ # Decide whether to build built-in, modular, or both.
+ # Normally, just do built-in.
+ 

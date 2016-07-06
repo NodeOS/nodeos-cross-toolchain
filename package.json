@@ -51,7 +51,8 @@
   "dependencies": {
     "download-manager": "^0.0.20",
     "fs-extra": "^0.30.0",
-    "prebuild-install": "1.0.2"
+    "prebuild-install": "1.0.2",
+    "async": "^2.0.0-rc.6"
   },
   "devDependencies": {
     "prebuild": "^4.2.2"

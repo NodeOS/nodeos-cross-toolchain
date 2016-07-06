@@ -49,7 +49,7 @@ SRC_DIR=$DEPS/linux
 STEP_DIR=$KERNEL_HEADERS
 
 if [[ ! -d $STEP_DIR ]]; then
-  echo -e "${WHT}Extracting Linux headers${CLR}"
+   printf "${WHT}Extracting Linux headers${CLR}${NWL}"
 
   rmStep $OBJ_BINUTILS
 
@@ -62,9 +62,8 @@ if [[ ! -d $STEP_DIR ]]; then
     $MAKE ARCH=$ARCH INSTALL_HDR_PATH=$OUT_DIR/$TARGET headers_install || exit 10
   ) || err $?
 
-  echo -e "${GRN}Successfully extracted Linux headers${CLR}"
+  printf "${GRN}Successfully extracted Linux headers${CLR}${NWL}"
 fi
-
 
 #
 # binutils
@@ -74,7 +73,7 @@ SRC_DIR=$DEPS/binutils
 STEP_DIR=$OBJ_BINUTILS
 
 if [[ ! -d $STEP_DIR ]]; then
-  echo -e "${WHT}Compiling binutils${CLR}"
+  printf "${WHT}Compiling binutils${CLR}${NWL}"
 
   rmStep $OBJ_GCC_STATIC
 
@@ -99,7 +98,7 @@ if [[ ! -d $STEP_DIR ]]; then
     $MAKE install || exit 23
   ) || err $?
 
-  echo -e "${GRN}Successfully compiled binutils${CLR}"
+  printf "${GRN}Successfully compiled binutils${CLR}${NWL}"
 fi
 
 
@@ -111,7 +110,7 @@ SRC_DIR=$DEPS/gcc
 STEP_DIR=$OBJ_GCC_STATIC
 
 if [[ ! -d $STEP_DIR ]]; then
-  echo -e "${WHT}Compiling GCC static${CLR}"
+  printf "${WHT}Compiling GCC static${CLR}${NWL}"
 
   rmStep $OBJ_MUSL
 
@@ -160,7 +159,7 @@ if [[ ! -d $STEP_DIR ]]; then
   # [ToDo] Check if we can be able to generate them on different folders
 #  rm -rf $STEP_DIR || exit 35
 
-  echo -e "${GRN}Successfully compiled GCC static${CLR}"
+  printf "${GRN}Successfully compiled GCC static${CLR}${NWL}"
 fi
 
 
@@ -172,7 +171,7 @@ SRC_DIR=$DEPS/musl
 STEP_DIR=$OBJ_MUSL
 
 if [[ ! -d $STEP_DIR ]]; then
-  echo -e "${WHT}Compiling musl${CLR}"
+  printf "${WHT}Compiling musl${CLR}${NWL}"
 
   rmStep $OBJ_GCC_FINAL
 
@@ -198,7 +197,7 @@ if [[ ! -d $STEP_DIR ]]; then
     DESTDIR=$OUT_DIR/$TARGET $MAKE install || exit 43
   ) || err $?
 
-  echo -e "${GRN}Successfully compiled musl${CLR}"
+  printf "${GRN}Successfully compiled musl${CLR}${NWL}"
 fi
 
 
@@ -210,7 +209,7 @@ SRC_DIR=$DEPS/gcc
 STEP_DIR=$OBJ_GCC_FINAL
 
 if [[ ! -d $STEP_DIR ]]; then
-  echo -e "${WHT}Compiling GCC final${CLR}"
+  printf "${WHT}Compiling GCC final${CLR}${NWL}"
 
   (
     mkdir -p $STEP_DIR &&
@@ -247,7 +246,7 @@ if [[ ! -d $STEP_DIR ]]; then
     $MAKE install || exit 53
   ) || err $?
 
-  echo -e "${GRN}Successfully compiled GCC final${CLR}"
+  printf "${GRN}Successfully compiled GCC final${CLR}${NWL}"
 fi
 
 
@@ -263,9 +262,9 @@ rm -rf {,share}/{info,man,doc} || exit 60
 # Strip libraries and binaries
 #
 
-strip --strip-debug    {,$TARGET/}lib/* &>> /dev/null
-strip --strip-unneeded {,$TARGET/}bin/* &>> /dev/null
+strip --strip-debug    {,$TARGET/}lib/* > /dev/null
+strip --strip-unneeded {,$TARGET/}bin/* > /dev/null
 
-strip --strip-unneeded libexec/gcc/$TARGET/*/*{,/*} &>> /dev/null
+strip --strip-unneeded libexec/gcc/$TARGET/*/*{,/*} > /dev/null
 
 exit 0  # Ignore errors from `strip`
