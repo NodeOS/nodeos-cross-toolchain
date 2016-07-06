@@ -95,7 +95,7 @@ if [[ ! -d $STEP_DIR ]]; then
     $MAKE configure-host && $MAKE || exit 22
 
     # Install
-    $MAKE instal || exit 23
+    $MAKE install || exit 23
   ) || err $?
 
   printf "${GRN}Successfully compiled binutils${CLR}${NWL}"
