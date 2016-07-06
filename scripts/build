@@ -57,9 +57,9 @@ if [[ ! -d $STEP_DIR ]]; then
     cd $SRC_DIR
 
     # Extract headers
-    $MAKE mrproper > /dev/null                                                      &&
-    $MAKE ARCH=$ARCH headers_check > /dev/null                                      &&
-    $MAKE ARCH=$ARCH INSTALL_HDR_PATH=$OUT_DIR/$TARGET headers_install  > /dev/null || exit 10
+    $MAKE mrproper                                                     &&
+    $MAKE ARCH=$ARCH headers_check                                     &&
+    $MAKE ARCH=$ARCH INSTALL_HDR_PATH=$OUT_DIR/$TARGET headers_install || exit 10
   ) || err $?
 
   printf "${GRN}Successfully extracted Linux headers${CLR}${NWL}"
@@ -92,10 +92,10 @@ if [[ ! -d $STEP_DIR ]]; then
         --disable-multilib              || exit 21
 
     # Compile
-    $MAKE configure-host > /dev/null && $MAKE > /dev/null || exit 22
+    $MAKE configure-host && $MAKE || exit 22
 
     # Install
-    $MAKE install > /dev/null || exit 23
+    $MAKE instal || exit 23
   ) || err $?
 
   printf "${GRN}Successfully compiled binutils${CLR}${NWL}"
@@ -149,10 +149,10 @@ if [[ ! -d $STEP_DIR ]]; then
 #        -mtune=$TUNE                          \
 
     # Compile
-    $MAKE all-gcc all-target-libgcc > /dev/null || exit 33
+    $MAKE all-gcc all-target-libgcc || exit 33
 
     # Install
-    $MAKE install-gcc install-target-libgcc > /dev/null || exit 34
+    $MAKE install-gcc install-target-libgcc || exit 34
   ) || err $?
 
   # Remove object files to allow generation of final version
@@ -191,10 +191,10 @@ if [[ ! -d $STEP_DIR ]]; then
         --disable-static     || exit 41
 
     # Compile
-    CROSS_COMPILE="$TARGET-" $MAKE > /dev/null || exit 42
+    CROSS_COMPILE="$TARGET-" $MAKE || exit 42
 
     # Install
-    DESTDIR=$OUT_DIR/$TARGET $MAKE install > /dev/null || exit 43
+    DESTDIR=$OUT_DIR/$TARGET $MAKE install || exit 43
   ) || err $?
 
   printf "${GRN}Successfully compiled musl${CLR}${NWL}"
@@ -240,10 +240,10 @@ if [[ ! -d $STEP_DIR ]]; then
 #        -mtune=$TUNE                          \
 
     # Compile
-    $MAKE > /dev/null || exit 52
+    $MAKE || exit 52
 
     # Install
-    $MAKE install > /dev/null || exit 53
+    $MAKE install || exit 53
   ) || err $?
 
   printf "${GRN}Successfully compiled GCC final${CLR}${NWL}"
