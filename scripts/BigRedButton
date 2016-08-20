@@ -19,8 +19,8 @@ rm -rf ${PRODUCTS[@]} || exit 11
 # Build cross toolchain for all supported platforms
 #
 
-PLATFORM=pc_qemu_32 npm run build || exit 1
-PLATFORM=pc_qemu_64 npm run build || exit 2
+PLATFORM=pc_qemu_32 npm run build && PLATFORM=pc_qemu_32 npm test || exit 1
+PLATFORM=pc_qemu_64 npm run build && PLATFORM=pc_qemu_64 npm test || exit 2
 
 
 #
