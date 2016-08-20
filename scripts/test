@@ -5,6 +5,7 @@ source scripts/adjustEnvVars.sh || exit $?
 
 
 LIBC="/lib/ld-musl-$CPU_PORT.so.1"
+PATH=`pwd`/bin:$PATH
 
 (
   mkdir -p build &&

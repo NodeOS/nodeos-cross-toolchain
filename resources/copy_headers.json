@@ -1,0 +1,16 @@
+{
+  "elf/elf.h": "elf/elf.h",
+  "string/byteswap.h": "byteswap.h",
+  "include/elf.h": "elf.h",
+  "include/endian.h": "endian.h",
+  "include/features.h": "features.h",
+  "include/gnu/stubs.h": "gnu/stubs.h",
+  "include/stdc-predef.h": "stdc-predef.h",
+  "string/endian.h": "string/endian.h",
+  "bits/typesizes.h": "bits/typesizes.h",
+  "sysdeps/generic/dl-dtprocnum.h": "dl-dtprocnum.h",
+  "sysdeps/x86/bits/byteswap-16.h": "bits/byteswap-16.h",
+  "sysdeps/x86/bits/byteswap.h": "bits/byteswap.h",
+  "sysdeps/x86/bits/endian.h": "bits/endian.h",
+  "sysdeps/x86/bits/wordsize.h": "bits/wordsize.h"
+}
