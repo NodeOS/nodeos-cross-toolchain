@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+// Reset the generic bin symlinks before publishing to npm sothey point to the
+// native platform libraries
+
 const fs = require('fs')
 
 
@@ -9,8 +12,10 @@ const bypass = fs.readFileSync('bypass.js')
 
 
 // http://stackoverflow.com/a/34597104/586382
-// NPM will run prepublish script after `npm install` (https://docs.npmjs.com/misc/scripts)
-// This ensures that when script is executed using `npm *` it is run only when the command is `npm publish`.
+// By design, NPM will run prepublish script after `npm install` (see
+// [npm docs](https://docs.npmjs.com/misc/scripts))
+// This trick ensures that when script is executed using `npm <whatever>` it is
+// run only when the command is `npm publish`.
 const npm_config_argv = process.env.npm_config_argv
 if(npm_config_argv && JSON.parse(npm_config_argv).original[0] === 'publish')
   fs.mkdir(DIR, function(err)
