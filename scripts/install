@@ -4,8 +4,6 @@ set -o pipefail
 
 
 DOWNLOAD=https://github.com/NodeOS/nodeos-cross-toolchain/releases/download/v{version}/{platform}-{arch}.tar.gz
-SYMLINKS=(addr2line ar as c++filt elfedit gprof ld ld.bfd nm objcopy objdump \
-          ranlib readelf size strings strip c++ cpp g++ gcc gcov gcov-tool)
 
 
 #
@@ -14,23 +12,8 @@ SYMLINKS=(addr2line ar as c++filt elfedit gprof ld ld.bfd nm objcopy objdump \
 
 prebuild-install -d $DOWNLOAD || npm run build || exit 10
 
-
-# If host platform is not based on musl, don't create un-prefixed symlinks
-readlink /lib/ld-linux.so.2 | grep musl || exit 0
-
-
 #
-# Update the bypass symbolic links to point to the cross-toolchain binaries
+# Restore binary symlinks
 #
 
-PLATFORM=
-CPU=
-
-source scripts/adjustEnvVars.sh || exit $?
-
-mkdir -p bin || exit 20
-
-for i in "${SYMLINKS[@]}"
-do
-  ln -sf $TARGET-$i bin/$i || exit 21
-done
+scripts/symlinks.sh || exit 20

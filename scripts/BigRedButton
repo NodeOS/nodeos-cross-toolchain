@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-source scripts/adjustEnvVars.sh
+set -o pipefail
+
+
+source scripts/adjustEnvVars.sh || exit $?
 
 
 #
@@ -12,15 +15,15 @@ PREBUILD=prebuilds/$KERNEL_NAME-$NODE_ARCH.tar.gz
 
 
 # Clean products previously to create them
-rm -rf ${PRODUCTS[@]} || exit 11
+rm -rf ${PRODUCTS[@]} || exit 1
 
 
 #
 # Build cross toolchain for all supported platforms
 #
 
-PLATFORM=pc_qemu_32 npm run build && PLATFORM=pc_qemu_32 npm test || exit 1
-PLATFORM=pc_qemu_64 npm run build && PLATFORM=pc_qemu_64 npm test || exit 2
+PLATFORM=pc_qemu_32 npm run build && PLATFORM=pc_qemu_32 npm test || exit 10
+PLATFORM=pc_qemu_64 npm run build && PLATFORM=pc_qemu_64 npm test || exit 11
 
 
 #
@@ -30,7 +33,7 @@ PLATFORM=pc_qemu_64 npm run build && PLATFORM=pc_qemu_64 npm test || exit 2
 STEP_DIR=$PREBUILD
 
 mkdir -p prebuilds                          &&
-tar -cf - ${PRODUCTS[@]} | gzip > $PREBUILD || err 12
+tar -cf - ${PRODUCTS[@]} | gzip > $PREBUILD || err 20
 
 
 #
@@ -38,5 +41,11 @@ tar -cf - ${PRODUCTS[@]} | gzip > $PREBUILD || err 12
 #
 
 if [ "$GITHUB_TOKEN" ]; then
-  prebuild --upload-all $GITHUB_TOKEN || exit 20
+  prebuild --upload-all $GITHUB_TOKEN || exit 30
 fi
+
+#
+# Restore binary symlinks
+#
+
+scripts/symlinks.sh || exit 40
