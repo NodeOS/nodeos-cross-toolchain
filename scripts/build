@@ -142,7 +142,7 @@ if [[ ! -d $STEP_DIR ]]; then
         --disable-multilib                    \
         --with-mpfr-include=$SRC_DIR/mpfr/src \
         --with-mpfr-lib=`pwd`/mpfr/src/.libs  \
-        --with-arch=$CPU                      \
+        --with-cpu=$CPU                       \
         --with-float=$FLOAT_ABI               \
         --with-fpu=$FPU                       \
         --enable-languages=c                  || exit 32
@@ -233,7 +233,7 @@ if [[ ! -d $STEP_DIR ]]; then
         --disable-multilib                    \
         --with-mpfr-include=$SRC_DIR/mpfr/src \
         --with-mpfr-lib=`pwd`/mpfr/src/.libs  \
-        --with-arch=$CPU                      \
+        --with-cpu=$CPU                       \
         --with-float=$FLOAT_ABI               \
         --with-fpu=$FPU                       \
         --enable-languages=c,c++              || exit 51

@@ -6,6 +6,50 @@ WHT="\e[37m"
 CLR="\e[0m"
 NWL="\n"
 
+
+while getopts ":b:c:k:m:p:" opt; do
+  case $opt in
+    b)
+      BITS="$OPTARG"  # 32, 64
+    ;;
+
+    c)
+      CPU="$OPTARG"
+    ;;
+
+    k)
+      KERNEL="$OPTARG"  # linux, netbsd, nokernel
+    ;;
+
+    m)
+      MACHINE="$OPTARG"  # pc, raspi2
+    ;;
+
+    p)
+      PLATFORM="$OPTARG"  # lxc, qemu, wsl
+    ;;
+
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+    ;;
+
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+    ;;
+  esac
+done
+
+# Default machine and kernel
+if [[ -z "$KERNEL" ]]; then
+  KERNEL=linux
+fi
+
+if [[ -z "$MACHINE" ]]; then
+  MACHINE=pc
+fi
+
 # Platform aliases
 case $PLATFORM in
   ""|pc|qemu)
@@ -32,11 +76,38 @@ case $PLATFORM in
   iso_64)
     PLATFORM=pc_iso_64
   ;;
-
-  raspberry)
-    PLATFORM=raspberry_qemu
-  ;;
 esac
+
+# default CPU for each machine
+if [[ -z "$CPU" ]]; then
+  case $MACHINE in
+    pc)
+      case $BITS in
+        "")
+          # CPU=native  # https://gcc.gnu.org/onlinedocs/gcc-4.9.2/gcc/i386-and-x86-64-Options.html#i386-and-x86-64-Options
+          CPU=`uname -m`
+        ;;
+
+        32)
+          CPU=i686
+        ;;
+
+        64)
+          CPU=nocona
+        ;;
+
+        *)
+          echo "Unknown BITS '$BITS' for MACHINE '$MACHINE'" >&2
+          exit 1
+        ;;
+      esac
+    ;;
+
+    raspi2)
+      CPU=cortex-a7
+    ;;
+  esac
+fi
 
 # default CPU for each platform
 if [[ -z "$CPU" ]]; then
@@ -46,11 +117,6 @@ if [[ -z "$CPU" ]]; then
     ;;
     *_64)
       CPU=x86_64
-    ;;
-
-    raspberry_*)
-      CPU=armv6j
-#      CPU=armv6zk
     ;;
 
     *)
@@ -80,10 +146,6 @@ case $PLATFORM in
     PLATFORM=pc_iso
   ;;
 
-#  raspberry_*)
-#    PLATFORM=raspberry
-#  ;;
-
   vagga_*)
     PLATFORM=vagga
   ;;
@@ -91,8 +153,9 @@ esac
 
 # Set target and architecture for the selected CPU
 case $CPU in
-  armv6j)
-#  armv6zk)
+  # Raspi
+  arm1136jf-s|arm1176jzf-s)
+#  armv6j|armv6zk|arm1136jf-s|arm1176jzf-s)
     ARCH="arm"
     BITS=32
     CPU_FAMILY=arm
@@ -100,11 +163,37 @@ case $CPU in
     FLOAT_ABI=hard
     FPU=vfp
     NODE_ARCH=arm
-    TARGET=$CPU-nodeos-linux-musleabihf
-#    TUNE=arm1136jf-s
-#    TUNE=arm1176jzf-s
+    TARGET=armv6zk-nodeos-linux-musleabihf
+#    TARGET=arm1176jzfs-nodeos-linux-musleabihf
   ;;
 
+  # Raspi2
+  cortex-a7)
+    ARCH="arm"
+    BITS=32
+    CPU_FAMILY=arm
+    CPU_PORT=armhf
+    FLOAT_ABI=hard
+    FPU=neon-vfpv4
+    NODE_ARCH=arm64
+    TARGET=armv7-nodeos-linux-musleabihf
+#    TARGET=cortexa7-nodeos-linux-musleabihf
+  ;;
+
+  # Raspi3
+  cortex-a53)
+    ARCH="arm"
+    BITS=64
+    CPU_FAMILY=arm
+    CPU_PORT=armhf
+    FLOAT_ABI=hard
+    FPU=crypto-neon-fp-armv8
+    NODE_ARCH=arm64
+    TARGET=armv7-nodeos-linux-musleabihf
+#    TARGET=cortexa53-nodeos-linux-musleabihf
+  ;;
+
+  # pc 32
   i[34567]86)
     ARCH="x86"
     BITS=32
@@ -114,7 +203,8 @@ case $CPU in
     TARGET=$CPU-nodeos-linux-musl
   ;;
 
-  x86_64|nocona)
+  # pc 64
+  athlon64|athlon-fx|atom|core2|k8|nocona|opteron|x86_64)
     ARCH="x86"
     BITS=64
     CPU_FAMILY=x86_64
@@ -153,7 +243,7 @@ function rmStep(){
 
 # Clean object dir and return the input error
 function err(){
-  printf "${RED}Error compiling '${OBJ_DIR}'${CLR}${NWL}"
+  printf "${RED}Error compiling '${OBJ_DIR}'${CLR}${NWL}" >&2
   rmStep $OBJ_DIR
   exit $1
 }
