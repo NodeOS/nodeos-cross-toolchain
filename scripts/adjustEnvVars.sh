@@ -22,7 +22,7 @@ while getopts ":b:c:k:m:p:" opt; do
     ;;
 
     m)
-      MACHINE="$OPTARG"  # pc, raspi2
+      MACHINE="$OPTARG"  # pc, raspi, raspi2, raspi3
     ;;
 
     p)
@@ -103,8 +103,16 @@ if [[ -z "$CPU" ]]; then
       esac
     ;;
 
+    raspi)
+      CPU=arm1176jzf-s
+    ;;
+
     raspi2)
       CPU=cortex-a7
+    ;;
+
+    raspi3)
+      CPU=cortex-a53
     ;;
   esac
 fi
@@ -154,8 +162,7 @@ esac
 # Set target and architecture for the selected CPU
 case $CPU in
   # Raspi
-  arm1136jf-s|arm1176jzf-s)
-#  armv6j|armv6zk|arm1136jf-s|arm1176jzf-s)
+  arm1176jzf-s)
     ARCH="arm"
     BITS=32
     CPU_FAMILY=arm
@@ -164,33 +171,30 @@ case $CPU in
     FPU=vfp
     NODE_ARCH=arm
     TARGET=armv6zk-nodeos-linux-musleabihf
-#    TARGET=arm1176jzfs-nodeos-linux-musleabihf
   ;;
 
   # Raspi2
   cortex-a7)
-    ARCH="arm"
+    ARCH="arm"  # armv7-a
     BITS=32
     CPU_FAMILY=arm
     CPU_PORT=armhf
     FLOAT_ABI=hard
     FPU=neon-vfpv4
-    NODE_ARCH=arm64
+    NODE_ARCH=arm
     TARGET=armv7-nodeos-linux-musleabihf
-#    TARGET=cortexa7-nodeos-linux-musleabihf
   ;;
 
   # Raspi3
   cortex-a53)
-    ARCH="arm"
+    ARCH="arm"  # armv8-a+crc
     BITS=64
     CPU_FAMILY=arm
     CPU_PORT=armhf
     FLOAT_ABI=hard
     FPU=crypto-neon-fp-armv8
     NODE_ARCH=arm64
-    TARGET=armv7-nodeos-linux-musleabihf
-#    TARGET=cortexa53-nodeos-linux-musleabihf
+    TARGET=armv8a-nodeos-linux-musleabihf
   ;;
 
   # pc 32
