@@ -50,34 +50,6 @@ if [[ -z "$MACHINE" ]]; then
   MACHINE=pc
 fi
 
-# Platform aliases
-case $PLATFORM in
-  ""|pc|qemu)
-    PLATFORM=pc_qemu
-  ;;
-  iso)
-    PLATFORM=pc_iso
-  ;;
-
-  docker)
-    PLATFORM=docker_64
-  ;;
-
-  qemu_32)
-    PLATFORM=pc_qemu_32
-  ;;
-  iso_32)
-    PLATFORM=pc_iso_32
-  ;;
-
-  qemu_64)
-    PLATFORM=pc_qemu_64
-  ;;
-  iso_64)
-    PLATFORM=pc_iso_64
-  ;;
-esac
-
 # default CPU for each machine
 if [[ -z "$CPU" ]]; then
   case $MACHINE in
@@ -117,45 +89,10 @@ if [[ -z "$CPU" ]]; then
   esac
 fi
 
-# default CPU for each platform
-if [[ -z "$CPU" ]]; then
-  case $PLATFORM in
-    *_32)
-      CPU=i686
-    ;;
-    *_64)
-      CPU=x86_64
-    ;;
-
-    *)
-#      CPU=native  # https://gcc.gnu.org/onlinedocs/gcc-4.9.2/gcc/i386-and-x86-64-Options.html#i386-and-x86-64-Options
-      CPU=`uname -m`
-    ;;
-  esac
-fi
-
 # [Hack] Can't be able to use x86_64 as generic x86 64 bits CPU
 case $CPU in
   x86_64)
     CPU=nocona
-  ;;
-esac
-
-# Normalice platforms
-case $PLATFORM in
-  docker_*)
-    PLATFORM=docker
-  ;;
-
-  pc_qemu_*)
-    PLATFORM=pc_qemu
-  ;;
-  pc_iso_*)
-    PLATFORM=pc_iso
-  ;;
-
-  vagga_*)
-    PLATFORM=vagga
   ;;
 esac
 
@@ -214,7 +151,6 @@ case $CPU in
     CPU_FAMILY=x86_64
     CPU_PORT=$CPU_FAMILY
     NODE_ARCH=x64
-#    TARGET=$CPU-nodeos-linux-musl
     TARGET=x86_64-nodeos-linux-musl
   ;;
 
