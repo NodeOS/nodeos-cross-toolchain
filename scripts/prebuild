@@ -17,7 +17,7 @@ const options = {path: DEPS}
 
 const BINUTILS_VERSION = "2.27"
 const GCC_VERSION      = "5.3.0"
-const LINUX_VERSION    = "4.7.1"
+const LINUX_VERSION    = "4.8.5"
 const MUSL_VERSION     = "1.1.15"
 const GLIBC_VERSION    = "2.24"
 
@@ -33,7 +33,7 @@ const GLIBC_URL    = "http://ftpmirror.gnu.org/glibc/glibc-"+GLIBC_VERSION+".tar
 
 // Checksums
 
-const LINUX_SHA256 = '3bf449c75723494a55e623afb4e50bca5795f213a51c87e6c031a72cc74f7359'
+const LINUX_SHA256 = 'b8dd5365c9f4319d41781f65f27b116ae7981d791bbad46491617fee0f87f8cc'
 
 
 // Patch GCC to work with musl
