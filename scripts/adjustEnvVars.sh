@@ -167,6 +167,7 @@ KERNEL_NAME=$(uname -s | tr '[:upper:]' '[:lower:]')
 
 function rmStep(){
   rm -rf "$@"
+  rmdir -p --ignore-fail-on-non-empty `dirname "$@"`
 }
 
 # Clean object dir and return the input error
