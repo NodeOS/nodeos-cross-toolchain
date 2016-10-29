@@ -25,7 +25,6 @@ readlink /lib/ld-linux.so.2 | grep musl || exit 0
 # Update the bypass symbolic links to point to the cross-toolchain binaries
 #
 
-PLATFORM=
 CPU=
 
 source scripts/adjustEnvVars.sh || exit $?

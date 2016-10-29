@@ -7,7 +7,7 @@ CLR="\e[0m"
 NWL="\n"
 
 
-while getopts ":b:c:k:m:p:" opt; do
+while getopts ":b:c:M:" opt; do
   case $opt in
     b)
       BITS="$OPTARG"  # 32, 64
@@ -17,16 +17,8 @@ while getopts ":b:c:k:m:p:" opt; do
       CPU="$OPTARG"
     ;;
 
-    k)
-      KERNEL="$OPTARG"  # linux, netbsd, nokernel
-    ;;
-
-    m)
+    M)
       MACHINE="$OPTARG"  # pc, raspi, raspi2, raspi3
-    ;;
-
-    p)
-      PLATFORM="$OPTARG"  # lxc, qemu, wsl
     ;;
 
     \?)
@@ -41,11 +33,7 @@ while getopts ":b:c:k:m:p:" opt; do
   esac
 done
 
-# Default machine and kernel
-if [[ -z "$KERNEL" ]]; then
-  KERNEL=linux
-fi
-
+# Default machine
 if [[ -z "$MACHINE" ]]; then
   MACHINE=pc
 fi
@@ -112,14 +100,14 @@ case $CPU in
 
   # Raspi2
   cortex-a7)
-    ARCH="arm"  # armv7-a
+    ARCH="arm"
     BITS=32
     CPU_FAMILY=arm
     CPU_PORT=armhf
     FLOAT_ABI=hard
     FPU=neon-vfpv4
     NODE_ARCH=arm
-    TARGET=armv7-nodeos-linux-musleabihf
+    TARGET=armv7ve-nodeos-linux-musleabihf
   ;;
 
   # Raspi3
@@ -135,7 +123,7 @@ case $CPU in
   ;;
 
   # pc 32
-  i[34567]86)
+  i[345678]86)
     ARCH="x86"
     BITS=32
     CPU_FAMILY=i386
@@ -183,7 +171,7 @@ function rmStep(){
 
 # Clean object dir and return the input error
 function err(){
-  printf "${RED}Error compiling '${OBJ_DIR}'${CLR}${NWL}" >&2
-  rmStep $OBJ_DIR
+  printf "${RED}Error building '${OBJ_DIR}'${CLR}${NWL}" >&2
+  rmStep $STEP_DIR
   exit $1
 }

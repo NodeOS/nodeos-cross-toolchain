@@ -23,13 +23,6 @@ if [[ $BITS = 64 ]]; then
 fi
 
 
-# Clean object dir and return the input error
-function err(){
-  rmStep $STEP_DIR
-  exit $1
-}
-
-
 #
 # Define steps paths
 #
