@@ -28,7 +28,7 @@ while getopts ":b:c:M:" opt; do
 
     :)
       echo "Option -$OPTARG requires an argument." >&2
-      exit 1
+      exit 2
     ;;
   esac
 done
