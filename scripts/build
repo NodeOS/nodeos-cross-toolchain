@@ -148,10 +148,6 @@ if [[ ! -d $STEP_DIR ]]; then
     $MAKE install-gcc install-target-libgcc || exit 34
   ) || err $?
 
-  # Remove object files to allow generation of final version
-  # [ToDo] Check if we can be able to generate them on different folders
-#  rm -rf $STEP_DIR || exit 35
-
   printf "${GRN}Successfully compiled GCC static${CLR}${NWL}"
 fi
 
