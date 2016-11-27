@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
 rm -rf build/ deps/
-rm -rf bin/ lib/ libexec/ share/ *-nodeos-linux-*/
+rm -rf bin/ lib/ libexec/ share/ *-nodeos-linux-musl*
 
 npm run prepublish -- --force

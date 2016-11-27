@@ -7,6 +7,6 @@ prebuilds/
 lib/
 libexec/
 share/
-*-nodeos-linux-musl/
+*-nodeos-linux-musl*
 
-bin/*-nodeos-linux-musl-*
+bin/*-nodeos-linux-musl*

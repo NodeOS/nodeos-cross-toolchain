@@ -10,7 +10,7 @@ source scripts/adjustEnvVars.sh || exit $?
 # Define steps paths
 #
 
-PRODUCTS=(bin lib libexec share *-nodeos-linux-musl)
+PRODUCTS=(bin lib libexec share *-nodeos-linux-musl*)
 PREBUILD=prebuilds/$KERNEL_NAME-$NODE_ARCH.tar.gz
 
 
