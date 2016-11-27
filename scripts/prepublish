@@ -23,7 +23,7 @@ if(npm_config_argv && JSON.parse(npm_config_argv).original[0] === 'publish'
   {
     if(err && err.code !== 'EEXIST') throw err
 
-    fs.readFile('bypass.js', function(err, bypass)
+    fs.readFile('resources/bypass.js', function(err, bypass)
     {
       if(err) throw err
 

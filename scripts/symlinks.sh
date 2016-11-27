@@ -13,7 +13,7 @@ SYMLINKS=(addr2line ar as c++filt elfedit gprof ld ld.bfd nm objcopy objdump \
 
 for i in "${SYMLINKS[@]}"
 do
-  cp bypass.js bin/$i || exit 1
+  cp resources/bypass.js bin/$i || exit 1
 done
 
 
