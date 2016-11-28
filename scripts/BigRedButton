@@ -34,7 +34,7 @@ npm run build -- -M raspi2 && npm test -- -M raspi2 || exit 12
 STEP_DIR=$PREBUILD
 
 mkdir -p prebuilds                          &&
-tar -cf - ${PRODUCTS[@]} | gzip > $PREBUILD || err 20
+tar -cf - ${PRODUCTS[@]} | gzip > $STEP_DIR || err 20
 
 
 #
