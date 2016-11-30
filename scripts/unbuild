@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 PRODUCTS=(bin lib libexec share *-nodeos-linux-musl*)
 
