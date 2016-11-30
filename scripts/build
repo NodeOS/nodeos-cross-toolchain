@@ -186,6 +186,10 @@ if [[ ! -d $STEP_DIR ]]; then
     DESTDIR=$OUT_DIR/$TARGET $MAKE install || exit 43
   ) || err $?
 
+  if [[ $CI ]]; then
+    rmStep $OBJ_GCC_STATIC
+  fi
+
   printf "${GRN}Successfully compiled musl${CLR}${NWL}"
 fi
 
