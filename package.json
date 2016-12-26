@@ -29,6 +29,7 @@
   "scripts": {
     "BigRedButton": "scripts/BigRedButton",
     "build": "scripts/build",
+    "preinstall-d": "scripts/preinstall-d",
     "install": "scripts/install",
     "prebuild": "scripts/prebuild",
     "prepublish": "scripts/prepublish",

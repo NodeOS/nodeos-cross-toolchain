@@ -5,8 +5,8 @@
  endif
  
 +ifeq ($(shell uname), Darwin)
-+HOSTCFLAGS += -I../glibc
-+HOSTCXXFLAGS += -I../glibc
++HOSTCFLAGS += -I../darwin-musl -w
++HOSTCXXFLAGS += -I../darwin-musl -w
 +endif
 +
  # Decide whether to build built-in, modular, or both.

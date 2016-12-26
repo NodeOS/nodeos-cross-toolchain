@@ -11,8 +11,8 @@ PATH=`pwd`/bin:$PATH
   mkdir -p build &&
   cd       build || exit 1
 
-  echo 'main(){}' > dummy.c        || exit 2
-  $TARGET-gcc dummy.c              || exit 3
-  readelf -l a.out | grep -q $LIBC || exit 4
-  rm dummy.c a.out                 || exit 5
+  echo 'main(){}' > dummy.c                || exit 2
+  $TARGET-gcc dummy.c                      || exit 3
+  $TARGET-readelf -l a.out | grep -q $LIBC || exit 4
+  rm dummy.c a.out                         || exit 5
 ) || exit $?

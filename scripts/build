@@ -6,7 +6,9 @@
 set +h
 umask 022
 export LC_ALL=POSIX
-unset CFLAGS
+# Silence warnings
+export CFLAGS="-w"
+export CXXFLAGS="-w"
 
 
 DEPS=`pwd`/deps
@@ -44,7 +46,7 @@ STEP_DIR=$KERNEL_HEADERS
 if [[ ! -d $STEP_DIR ]]; then
    printf "${WHT}Extracting Linux headers${CLR}${NWL}"
 
-  rmStep $OBJ_BINUTILS
+  rm -rf $OBJ_BINUTILS
 
   (
     cd $SRC_DIR
@@ -68,7 +70,7 @@ STEP_DIR=$OBJ_BINUTILS
 if [[ ! -d $STEP_DIR ]]; then
   printf "${WHT}Compiling binutils${CLR}${NWL}"
 
-  rmStep $OBJ_GCC_STATIC
+  rm -rf $OBJ_GCC_STATIC
 
   (
     mkdir -p $STEP_DIR &&
@@ -105,7 +107,12 @@ STEP_DIR=$OBJ_GCC_STATIC
 if [[ ! -d $STEP_DIR ]]; then
   printf "${WHT}Compiling GCC static${CLR}${NWL}"
 
-  rmStep $OBJ_MUSL
+  rm -rf $OBJ_MUSL
+
+  # Fix for arm builds on osx
+  if [[ $(uname -s) = "Darwin" && $ARCH = "arm" ]]; then
+    export CXXFLAGS="$CXXFLAGS -fbracket-depth=512"
+  fi
 
   (
     mkdir -p $STEP_DIR &&
@@ -148,6 +155,8 @@ if [[ ! -d $STEP_DIR ]]; then
     $MAKE install-gcc install-target-libgcc || exit 34
   ) || err $?
 
+  export CXXFLAGS="$ORIGINAL_CXXFLAGS"
+
   printf "${GRN}Successfully compiled GCC static${CLR}${NWL}"
 fi
 
@@ -162,7 +171,7 @@ STEP_DIR=$OBJ_MUSL
 if [[ ! -d $STEP_DIR ]]; then
   printf "${WHT}Compiling musl${CLR}${NWL}"
 
-  rmStep $OBJ_GCC_FINAL
+  rm -rf $OBJ_GCC_FINAL
 
   (
     PATH=`pwd`/bin:$PATH  # Use the just generated cross-compiler ONLY for musl
@@ -187,7 +196,7 @@ if [[ ! -d $STEP_DIR ]]; then
   ) || err $?
 
   if [[ $CI ]]; then
-    rmStep $OBJ_GCC_STATIC
+    rm -rf $OBJ_GCC_STATIC
   fi
 
   printf "${GRN}Successfully compiled musl${CLR}${NWL}"
@@ -203,6 +212,10 @@ STEP_DIR=$OBJ_GCC_FINAL
 
 if [[ ! -d $STEP_DIR ]]; then
   printf "${WHT}Compiling GCC final${CLR}${NWL}"
+
+  if [[ $(uname -s) = "Darwin" && $ARCH = "arm" ]]; then
+    export CXXFLAGS="$CXXFLAGS -fbracket-depth=512"
+  fi
 
   (
     mkdir -p $STEP_DIR &&
@@ -239,6 +252,8 @@ if [[ ! -d $STEP_DIR ]]; then
     $MAKE install || exit 53
   ) || err $?
 
+  export CXXFLAGS="$ORIGINAL_CXXFLAGS"
+
   printf "${GRN}Successfully compiled GCC final${CLR}${NWL}"
 fi
 
@@ -255,9 +270,17 @@ rm -rf {,share}/{info,man,doc} || exit 60
 # Strip libraries and binaries
 #
 
-strip --strip-debug    {,$TARGET/}lib/* > /dev/null
-strip --strip-unneeded {,$TARGET/}bin/* > /dev/null
+if [[ $(uname -s) = "Linux" ]]; then
+  strip --strip-debug    {,$TARGET/}lib/* > /dev/null
+  strip --strip-unneeded {,$TARGET/}bin/* > /dev/null
+  strip --strip-unneeded libexec/gcc/$TARGET/*/*{,/*} > /dev/null
+fi
 
-strip --strip-unneeded libexec/gcc/$TARGET/*/*{,/*} > /dev/null
+# Functional equivalents for OS X
+if [[ $(uname -s) = "Darwin" ]]; then
+  strip -u -r -S {,$TARGET/}lib/* > /dev/null
+  strip -u -r -x {,$TARGET/}bin/* > /dev/null
+  strip -u -r -x libexec/gcc/$TARGET/*/*{,/*} > /dev/null
+fi
 
 exit 0  # Ignore errors from `strip`

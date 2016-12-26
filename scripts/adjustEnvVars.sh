@@ -6,6 +6,9 @@ WHT="\e[37m"
 CLR="\e[0m"
 NWL="\n"
 
+ORIGINAL_CFLAGS="$CFLAGS"
+ORIGINAL_CXXFLAGS="$CXXFLAGS"
+
 
 while getopts ":b:c:M:" opt; do
   case $opt in
@@ -165,14 +168,9 @@ MAKE="$MAKE1 --jobs=$JOBS"
 
 KERNEL_NAME=$(uname -s | tr '[:upper:]' '[:lower:]')
 
-function rmStep(){
-  rm -rf "$@"
-  rmdir -p --ignore-fail-on-non-empty `dirname "$@"`
-}
-
 # Clean object dir and return the input error
 function err(){
   printf "${RED}Error building '${OBJ_DIR}'${CLR}${NWL}" >&2
-  rmStep $STEP_DIR
+  rm -rf $STEP_DIR
   exit $1
 }
