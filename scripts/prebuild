@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const join    = require('path').join
+const join = require('path').join
 
 const async   = require('async')
 const fs      = require('fs-extra')
@@ -37,8 +37,10 @@ const LINUX_SHA256 = 'b8dd5365c9f4319d41781f65f27b116ae7981d791bbad46491617fee0f
 // Patch GCC to work with musl
 const GCC_PATCH_URL = 'https://raw.githubusercontent.com/GregorR/musl-cross/master/patches/gcc-'+GCC_VERSION+'-musl.diff'
 
+
 // Patch Linux to use musl headers on OS X
 const LINUX_DARWIN_PATCH_PATH = PATCHES+'/linux-darwin.diff'
+
 
 //
 // gcc prerequisites
@@ -86,7 +88,8 @@ function download_prerequisites(callback)
 }
 
 // Copy musl headers for compilation on OS X
-function copy_headers(callback) {
+function copy_headers(callback)
+{
   const MUSL_INCLUDE_PATH = DEPS+'/musl/include'
   const DARWIN_MUSL_PATH = DEPS+'/darwin-musl'
 
@@ -100,7 +103,7 @@ function copy_headers(callback) {
 }
 
 //
-// binutils, Linux & musl
+// binutils, gcc, Linux & musl
 //
 
 var downloads =
@@ -127,7 +130,8 @@ var downloads =
   }
 ]
 
-if (process.platform === 'darwin') {
+if(process.platform === 'darwin')
+{
   downloads[2].patch = LINUX_DARWIN_PATCH_PATH
   downloads[3].action = copy_headers
 }

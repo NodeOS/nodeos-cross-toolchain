@@ -6,6 +6,7 @@
 set +h
 umask 022
 export LC_ALL=POSIX
+
 # Silence warnings
 export CFLAGS="-w"
 export CXXFLAGS="-w"

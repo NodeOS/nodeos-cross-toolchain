@@ -9,17 +9,25 @@ NWL="\n"
 ORIGINAL_CFLAGS="$CFLAGS"
 ORIGINAL_CXXFLAGS="$CXXFLAGS"
 
+PLATFORM=$(uname -s)
+
 # Platform dependent commands
-if [[ $(uname -s) = "Linux" ]]; then
-  RMDIR="rmdir -p --ignore-fail-on-non-empty"
-  STRIP_DEBUG="strip --strip-debug"
-  STRIP_UNNEEDED="strip --strip-unneeded"
-fi
-if [[ $(uname -s) = "Darwin" ]]; then
-  RMDIR="rmdir -p"
-  STRIP_DEBUG="strip -u -r -S"
-  STRIP_UNNEEDED="strip -u -r -x"
-fi
+case $PLATFORM in
+  "Linux")
+    RMDIR="rmdir -p --ignore-fail-on-non-empty"
+    STRIP_DEBUG="strip --strip-debug"
+    STRIP_UNNEEDED="strip --strip-unneeded"
+  ;;
+  "Darwin")
+    RMDIR="rmdir -p"
+    STRIP_DEBUG="strip -u -r -S"
+    STRIP_UNNEEDED="strip -u -r -x"
+  ;;
+  *)
+    echo "Unsupported platform: $PLATFORM" >&2
+    exit 1
+  ;;
+esac
 
 while getopts ":b:c:M:" opt; do
   case $opt in
