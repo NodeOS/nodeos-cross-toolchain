@@ -1,12 +1,9 @@
 #!/usr/bin/env node
 
-const join = require('path').join
-
 const async   = require('async')
 const fs      = require('fs-extra')
+const join    = require('path').join
 const manager = require('download-manager')
-const os      = require('os')
-const path    = require('path')
 
 
 const DEPS='deps'
