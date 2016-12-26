@@ -7,16 +7,12 @@ set +h
 #
 
 if [[ $(uname -s) = "Darwin" ]]; then
-  command -v port >/dev/null ||
+  command -v brew >/dev/null ||
   (
-    echo "MacPorts is not installed" &&
-    echo "Please visit https://www.macports.org/ for more information" &&
+    echo "Brew is not installed" &&
+    echo "Visit http://brew.sh/ for more information" &&
     exit 40
   )
 
-  port -q install gsed || exit $?
-  ln -s /opt/local/bin/gsed /usr/local/bin/sed  || exit $?
-
-  port -q install binutils || exit $?
-  ln -s /opt/local/bin/gstrip /usr/local/bin/strip  || exit $?
+  brew install gnu-sed --with-default-names || exit $?
 fi

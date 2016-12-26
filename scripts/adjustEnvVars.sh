@@ -6,6 +6,28 @@ WHT="\e[37m"
 CLR="\e[0m"
 NWL="\n"
 
+ORIGINAL_CFLAGS="$CFLAGS"
+ORIGINAL_CXXFLAGS="$CXXFLAGS"
+
+PLATFORM=$(uname -s)
+
+# Platform dependent commands
+case $PLATFORM in
+  "Linux")
+    RMDIR="rmdir -p --ignore-fail-on-non-empty"
+    STRIP_DEBUG="strip --strip-debug"
+    STRIP_UNNEEDED="strip --strip-unneeded"
+  ;;
+  "Darwin")
+    RMDIR="rmdir -p"
+    STRIP_DEBUG="strip -u -r -S"
+    STRIP_UNNEEDED="strip -u -r -x"
+  ;;
+  *)
+    echo "Unsupported platform: $PLATFORM" >&2
+    exit 1
+  ;;
+esac
 
 while getopts ":b:c:M:" opt; do
   case $opt in
@@ -167,7 +189,7 @@ KERNEL_NAME=$(uname -s | tr '[:upper:]' '[:lower:]')
 
 function rmStep(){
   rm -rf "$@"
-  rmdir -p --ignore-fail-on-non-empty `dirname "$@"`
+  $RMDIR `dirname "$@"`
 }
 
 # Clean object dir and return the input error

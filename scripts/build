@@ -6,7 +6,10 @@
 set +h
 umask 022
 export LC_ALL=POSIX
-unset CFLAGS
+
+# Silence warnings
+export CFLAGS="-w"
+export CXXFLAGS="-w"
 
 
 DEPS=`pwd`/deps
@@ -107,6 +110,11 @@ if [[ ! -d $STEP_DIR ]]; then
 
   rmStep $OBJ_MUSL
 
+  # Fix for arm builds on osx
+  if [[ $(uname -s) = "Darwin" && $ARCH = "arm" ]]; then
+    export CXXFLAGS="$CXXFLAGS -fbracket-depth=512"
+  fi
+
   (
     mkdir -p $STEP_DIR &&
     cd       $STEP_DIR || exit 30
@@ -147,6 +155,8 @@ if [[ ! -d $STEP_DIR ]]; then
     # Install
     $MAKE install-gcc install-target-libgcc || exit 34
   ) || err $?
+
+  export CXXFLAGS="$ORIGINAL_CXXFLAGS"
 
   printf "${GRN}Successfully compiled GCC static${CLR}${NWL}"
 fi
@@ -204,6 +214,10 @@ STEP_DIR=$OBJ_GCC_FINAL
 if [[ ! -d $STEP_DIR ]]; then
   printf "${WHT}Compiling GCC final${CLR}${NWL}"
 
+  if [[ $(uname -s) = "Darwin" && $ARCH = "arm" ]]; then
+    export CXXFLAGS="$CXXFLAGS -fbracket-depth=512"
+  fi
+
   (
     mkdir -p $STEP_DIR &&
     cd       $STEP_DIR || exit 50
@@ -239,6 +253,8 @@ if [[ ! -d $STEP_DIR ]]; then
     $MAKE install || exit 53
   ) || err $?
 
+  export CXXFLAGS="$ORIGINAL_CXXFLAGS"
+
   printf "${GRN}Successfully compiled GCC final${CLR}${NWL}"
 fi
 
@@ -255,9 +271,8 @@ rm -rf {,share}/{info,man,doc} || exit 60
 # Strip libraries and binaries
 #
 
-strip --strip-debug    {,$TARGET/}lib/* > /dev/null
-strip --strip-unneeded {,$TARGET/}bin/* > /dev/null
-
-strip --strip-unneeded libexec/gcc/$TARGET/*/*{,/*} > /dev/null
+$STRIP_DEBUG    {,$TARGET/}lib/* > /dev/null
+$STRIP_UNNEEDED {,$TARGET/}bin/* > /dev/null
+$STRIP_UNNEEDED libexec/gcc/$TARGET/*/*{,/*} > /dev/null
 
 exit 0  # Ignore errors from `strip`
