@@ -9,6 +9,17 @@ NWL="\n"
 ORIGINAL_CFLAGS="$CFLAGS"
 ORIGINAL_CXXFLAGS="$CXXFLAGS"
 
+# Platform dependent commands
+if [[ $(uname -s) = "Linux" ]]; then
+  RMDIR="rmdir -p --ignore-fail-on-non-empty"
+  STRIP_DEBUG="strip --strip-debug"
+  STRIP_UNNEEDED="strip --strip-unneeded"
+fi
+if [[ $(uname -s) = "Darwin" ]]; then
+  RMDIR="rmdir -p"
+  STRIP_DEBUG="strip -u -r -S"
+  STRIP_UNNEEDED="strip -u -r -x"
+fi
 
 while getopts ":b:c:M:" opt; do
   case $opt in
@@ -168,9 +179,14 @@ MAKE="$MAKE1 --jobs=$JOBS"
 
 KERNEL_NAME=$(uname -s | tr '[:upper:]' '[:lower:]')
 
+function rmStep(){
+  rm -rf "$@"
+  $RMDIR `dirname "$@"`
+}
+
 # Clean object dir and return the input error
 function err(){
   printf "${RED}Error building '${OBJ_DIR}'${CLR}${NWL}" >&2
-  rm -rf $STEP_DIR
+  rmStep $STEP_DIR
   exit $1
 }

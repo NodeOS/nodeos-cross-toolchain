@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
+const join    = require('path').join
+
 const async   = require('async')
 const fs      = require('fs-extra')
-const join    = require('path').join
 const manager = require('download-manager')
 
 
@@ -84,8 +85,22 @@ function download_prerequisites(callback)
   manager(downloads, options, callback)
 }
 
+// Copy musl headers for compilation on OS X
+function copy_headers(callback) {
+  const MUSL_INCLUDE_PATH = DEPS+'/musl/include'
+  const DARWIN_MUSL_PATH = DEPS+'/darwin-musl'
+
+
+  async.each(require('../resources/darwin-headers.json'),
+  function(file, callback)
+  {
+    fs.copy(MUSL_INCLUDE_PATH+'/'+file, DARWIN_MUSL_PATH+'/'+file, callback)
+  },
+  callback)
+}
+
 //
-// binutils, gcc, Linux & musl
+// binutils, Linux & musl
 //
 
 var downloads =
@@ -111,20 +126,6 @@ var downloads =
     url: MUSL_URL
   }
 ]
-
-// Copy musl headers for compilation on OS X
-function copy_headers(callback) {
-  const MUSL_INCLUDE_PATH = DEPS+'/musl/include'
-  const DARWIN_MUSL_PATH = DEPS+'/darwin-musl'
-
-
-  async.each(require('../resources/darwin-headers.json'),
-  function(file, callback)
-  {
-    fs.copy(MUSL_INCLUDE_PATH+'/'+file, DARWIN_MUSL_PATH+'/'+file, callback)
-  },
-  callback)
-}
 
 if (process.platform === 'darwin') {
   downloads[2].patch = LINUX_DARWIN_PATCH_PATH

@@ -46,7 +46,7 @@ STEP_DIR=$KERNEL_HEADERS
 if [[ ! -d $STEP_DIR ]]; then
    printf "${WHT}Extracting Linux headers${CLR}${NWL}"
 
-  rm -rf $OBJ_BINUTILS
+  rmStep $OBJ_BINUTILS
 
   (
     cd $SRC_DIR
@@ -70,7 +70,7 @@ STEP_DIR=$OBJ_BINUTILS
 if [[ ! -d $STEP_DIR ]]; then
   printf "${WHT}Compiling binutils${CLR}${NWL}"
 
-  rm -rf $OBJ_GCC_STATIC
+  rmStep $OBJ_GCC_STATIC
 
   (
     mkdir -p $STEP_DIR &&
@@ -107,7 +107,7 @@ STEP_DIR=$OBJ_GCC_STATIC
 if [[ ! -d $STEP_DIR ]]; then
   printf "${WHT}Compiling GCC static${CLR}${NWL}"
 
-  rm -rf $OBJ_MUSL
+  rmStep $OBJ_MUSL
 
   # Fix for arm builds on osx
   if [[ $(uname -s) = "Darwin" && $ARCH = "arm" ]]; then
@@ -171,7 +171,7 @@ STEP_DIR=$OBJ_MUSL
 if [[ ! -d $STEP_DIR ]]; then
   printf "${WHT}Compiling musl${CLR}${NWL}"
 
-  rm -rf $OBJ_GCC_FINAL
+  rmStep $OBJ_GCC_FINAL
 
   (
     PATH=`pwd`/bin:$PATH  # Use the just generated cross-compiler ONLY for musl
@@ -196,7 +196,7 @@ if [[ ! -d $STEP_DIR ]]; then
   ) || err $?
 
   if [[ $CI ]]; then
-    rm -rf $OBJ_GCC_STATIC
+    rmStep $OBJ_GCC_STATIC
   fi
 
   printf "${GRN}Successfully compiled musl${CLR}${NWL}"
@@ -270,17 +270,8 @@ rm -rf {,share}/{info,man,doc} || exit 60
 # Strip libraries and binaries
 #
 
-if [[ $(uname -s) = "Linux" ]]; then
-  strip --strip-debug    {,$TARGET/}lib/* > /dev/null
-  strip --strip-unneeded {,$TARGET/}bin/* > /dev/null
-  strip --strip-unneeded libexec/gcc/$TARGET/*/*{,/*} > /dev/null
-fi
-
-# Functional equivalents for OS X
-if [[ $(uname -s) = "Darwin" ]]; then
-  strip -u -r -S {,$TARGET/}lib/* > /dev/null
-  strip -u -r -x {,$TARGET/}bin/* > /dev/null
-  strip -u -r -x libexec/gcc/$TARGET/*/*{,/*} > /dev/null
-fi
+$STRIP_DEBUG    {,$TARGET/}lib/* > /dev/null
+$STRIP_UNNEEDED {,$TARGET/}bin/* > /dev/null
+$STRIP_UNNEEDED libexec/gcc/$TARGET/*/*{,/*} > /dev/null
 
 exit 0  # Ignore errors from `strip`
