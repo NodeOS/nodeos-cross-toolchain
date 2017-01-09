@@ -6,56 +6,95 @@ WHT="\e[37m"
 CLR="\e[0m"
 NWL="\n"
 
-# Platform aliases
+ORIGINAL_CFLAGS="$CFLAGS"
+ORIGINAL_CXXFLAGS="$CXXFLAGS"
+
+PLATFORM=$(uname -s)
+
+# Platform dependent commands
 case $PLATFORM in
-  ""|pc|qemu)
-    PLATFORM=pc_qemu
+  "Linux")
+    RMDIR="rmdir -p --ignore-fail-on-non-empty"
+    STRIP_DEBUG="strip --strip-debug"
+    STRIP_UNNEEDED="strip --strip-unneeded"
   ;;
-  iso)
-    PLATFORM=pc_iso
+  "Darwin")
+    RMDIR="rmdir -p"
+    STRIP_DEBUG="strip -u -r -S"
+    STRIP_UNNEEDED="strip -u -r -x"
   ;;
-
-  docker)
-    PLATFORM=docker_64
-  ;;
-
-  qemu_32)
-    PLATFORM=pc_qemu_32
-  ;;
-  iso_32)
-    PLATFORM=pc_iso_32
-  ;;
-
-  qemu_64)
-    PLATFORM=pc_qemu_64
-  ;;
-  iso_64)
-    PLATFORM=pc_iso_64
-  ;;
-
-  raspberry)
-    PLATFORM=raspberry_qemu
+  *)
+    echo "Unsupported platform: $PLATFORM" >&2
+    exit 1
   ;;
 esac
 
-# default CPU for each platform
+while getopts ":b:c:M:" opt; do
+  case $opt in
+    b)
+      BITS="$OPTARG"  # 32, 64
+    ;;
+
+    c)
+      CPU="$OPTARG"
+    ;;
+
+    M)
+      MACHINE="$OPTARG"  # pc, raspi, raspi2, raspi3
+    ;;
+
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+    ;;
+
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 2
+    ;;
+  esac
+done
+
+# Default machine
+if [[ -z "$MACHINE" ]]; then
+  MACHINE=pc
+fi
+
+# default CPU for each machine
 if [[ -z "$CPU" ]]; then
-  case $PLATFORM in
-    *_32)
-      CPU=i686
-    ;;
-    *_64)
-      CPU=x86_64
+  case $MACHINE in
+    pc)
+      case $BITS in
+        "")
+          # CPU=native  # https://gcc.gnu.org/onlinedocs/gcc-4.9.2/gcc/i386-and-x86-64-Options.html#i386-and-x86-64-Options
+          CPU=`uname -m`
+        ;;
+
+        32)
+          CPU=i686
+        ;;
+
+        64)
+          CPU=nocona
+        ;;
+
+        *)
+          echo "Unknown BITS '$BITS' for MACHINE '$MACHINE'" >&2
+          exit 1
+        ;;
+      esac
     ;;
 
-    raspberry_*)
-      CPU=armv6j
-#      CPU=armv6zk
+    raspi)
+      CPU=arm1176jzf-s
     ;;
 
-    *)
-#      CPU=native  # https://gcc.gnu.org/onlinedocs/gcc-4.9.2/gcc/i386-and-x86-64-Options.html#i386-and-x86-64-Options
-      CPU=`uname -m`
+    raspi2)
+      CPU=cortex-a7
+    ;;
+
+    raspi3)
+      CPU=cortex-a53
     ;;
   esac
 fi
@@ -67,32 +106,10 @@ case $CPU in
   ;;
 esac
 
-# Normalice platforms
-case $PLATFORM in
-  docker_*)
-    PLATFORM=docker
-  ;;
-
-  pc_qemu_*)
-    PLATFORM=pc_qemu
-  ;;
-  pc_iso_*)
-    PLATFORM=pc_iso
-  ;;
-
-#  raspberry_*)
-#    PLATFORM=raspberry
-#  ;;
-
-  vagga_*)
-    PLATFORM=vagga
-  ;;
-esac
-
 # Set target and architecture for the selected CPU
 case $CPU in
-  armv6j)
-#  armv6zk)
+  # Raspi
+  arm1176jzf-s)
     ARCH="arm"
     BITS=32
     CPU_FAMILY=arm
@@ -100,12 +117,35 @@ case $CPU in
     FLOAT_ABI=hard
     FPU=vfp
     NODE_ARCH=arm
-    TARGET=$CPU-nodeos-linux-musleabihf
-#    TUNE=arm1136jf-s
-#    TUNE=arm1176jzf-s
+    TARGET=armv6zk-nodeos-linux-musleabihf
   ;;
 
-  i[34567]86)
+  # Raspi2
+  cortex-a7)
+    ARCH="arm"
+    BITS=32
+    CPU_FAMILY=arm
+    CPU_PORT=armhf
+    FLOAT_ABI=hard
+    FPU=neon-vfpv4
+    NODE_ARCH=arm
+    TARGET=armv7ve-nodeos-linux-musleabihf
+  ;;
+
+  # Raspi3
+  cortex-a53)
+    ARCH="arm"  # armv8-a+crc
+    BITS=64
+    CPU_FAMILY=arm
+    CPU_PORT=armhf
+    FLOAT_ABI=hard
+    FPU=crypto-neon-fp-armv8
+    NODE_ARCH=arm64
+    TARGET=armv8a-nodeos-linux-musleabihf
+  ;;
+
+  # pc 32
+  i[345678]86)
     ARCH="x86"
     BITS=32
     CPU_FAMILY=i386
@@ -114,13 +154,13 @@ case $CPU in
     TARGET=$CPU-nodeos-linux-musl
   ;;
 
-  x86_64|nocona)
+  # pc 64
+  athlon64|athlon-fx|atom|core2|k8|nocona|opteron|x86_64)
     ARCH="x86"
     BITS=64
     CPU_FAMILY=x86_64
     CPU_PORT=$CPU_FAMILY
     NODE_ARCH=x64
-#    TARGET=$CPU-nodeos-linux-musl
     TARGET=x86_64-nodeos-linux-musl
   ;;
 
@@ -149,11 +189,12 @@ KERNEL_NAME=$(uname -s | tr '[:upper:]' '[:lower:]')
 
 function rmStep(){
   rm -rf "$@"
+  $RMDIR `dirname "$@"`
 }
 
 # Clean object dir and return the input error
 function err(){
-  printf "${RED}Error compiling '${OBJ_DIR}'${CLR}${NWL}"
-  rmStep $OBJ_DIR
+  printf "${RED}Error building '${OBJ_DIR}'${CLR}${NWL}" >&2
+  rmStep $STEP_DIR
   exit $1
 }

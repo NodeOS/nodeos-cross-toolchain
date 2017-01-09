@@ -6,7 +6,10 @@
 set +h
 umask 022
 export LC_ALL=POSIX
-unset CFLAGS
+
+# Silence warnings
+export CFLAGS="-w"
+export CXXFLAGS="-w"
 
 
 DEPS=`pwd`/deps
@@ -21,13 +24,6 @@ ln -sfn . $TARGET/usr || exit 1
 if [[ $BITS = 64 ]]; then
   ln -sfn lib $TARGET/lib64 || exit 2
 fi
-
-
-# Clean object dir and return the input error
-function err(){
-  rmStep $STEP_DIR
-  exit $1
-}
 
 
 #
@@ -114,6 +110,11 @@ if [[ ! -d $STEP_DIR ]]; then
 
   rmStep $OBJ_MUSL
 
+  # Fix for arm builds on osx
+  if [[ $(uname -s) = "Darwin" && $ARCH = "arm" ]]; then
+    export CXXFLAGS="$CXXFLAGS -fbracket-depth=512"
+  fi
+
   (
     mkdir -p $STEP_DIR &&
     cd       $STEP_DIR || exit 30
@@ -142,7 +143,7 @@ if [[ ! -d $STEP_DIR ]]; then
         --disable-multilib                    \
         --with-mpfr-include=$SRC_DIR/mpfr/src \
         --with-mpfr-lib=`pwd`/mpfr/src/.libs  \
-        --with-arch=$CPU                      \
+        --with-cpu=$CPU                       \
         --with-float=$FLOAT_ABI               \
         --with-fpu=$FPU                       \
         --enable-languages=c                  || exit 32
@@ -155,9 +156,7 @@ if [[ ! -d $STEP_DIR ]]; then
     $MAKE install-gcc install-target-libgcc || exit 34
   ) || err $?
 
-  # Remove object files to allow generation of final version
-  # [ToDo] Check if we can be able to generate them on different folders
-#  rm -rf $STEP_DIR || exit 35
+  export CXXFLAGS="$ORIGINAL_CXXFLAGS"
 
   printf "${GRN}Successfully compiled GCC static${CLR}${NWL}"
 fi
@@ -197,6 +196,10 @@ if [[ ! -d $STEP_DIR ]]; then
     DESTDIR=$OUT_DIR/$TARGET $MAKE install || exit 43
   ) || err $?
 
+  if [[ $CI ]]; then
+    rmStep $OBJ_GCC_STATIC
+  fi
+
   printf "${GRN}Successfully compiled musl${CLR}${NWL}"
 fi
 
@@ -210,6 +213,10 @@ STEP_DIR=$OBJ_GCC_FINAL
 
 if [[ ! -d $STEP_DIR ]]; then
   printf "${WHT}Compiling GCC final${CLR}${NWL}"
+
+  if [[ $(uname -s) = "Darwin" && $ARCH = "arm" ]]; then
+    export CXXFLAGS="$CXXFLAGS -fbracket-depth=512"
+  fi
 
   (
     mkdir -p $STEP_DIR &&
@@ -233,7 +240,7 @@ if [[ ! -d $STEP_DIR ]]; then
         --disable-multilib                    \
         --with-mpfr-include=$SRC_DIR/mpfr/src \
         --with-mpfr-lib=`pwd`/mpfr/src/.libs  \
-        --with-arch=$CPU                      \
+        --with-cpu=$CPU                       \
         --with-float=$FLOAT_ABI               \
         --with-fpu=$FPU                       \
         --enable-languages=c,c++              || exit 51
@@ -245,6 +252,8 @@ if [[ ! -d $STEP_DIR ]]; then
     # Install
     $MAKE install || exit 53
   ) || err $?
+
+  export CXXFLAGS="$ORIGINAL_CXXFLAGS"
 
   printf "${GRN}Successfully compiled GCC final${CLR}${NWL}"
 fi
@@ -262,9 +271,8 @@ rm -rf {,share}/{info,man,doc} || exit 60
 # Strip libraries and binaries
 #
 
-strip --strip-debug    {,$TARGET/}lib/* > /dev/null
-strip --strip-unneeded {,$TARGET/}bin/* > /dev/null
-
-strip --strip-unneeded libexec/gcc/$TARGET/*/*{,/*} > /dev/null
+$STRIP_DEBUG    {,$TARGET/}lib/* > /dev/null
+$STRIP_UNNEEDED {,$TARGET/}bin/* > /dev/null
+$STRIP_UNNEEDED libexec/gcc/$TARGET/*/*{,/*} > /dev/null
 
 exit 0  # Ignore errors from `strip`

@@ -1,14 +1,11 @@
 #!/usr/bin/env node
 
-// Reset the generic bin symlinks before publishing to npm sothey point to the
-// native platform libraries
+/**
+ * Reset the generic bin symlinks before publishing to npm so they point to the
+ * native platform libraries
+ */
 
 const fs = require('fs')
-
-
-const DIR = 'bin'
-const bins = Object.keys(require('../package.json').bin)
-const bypass = fs.readFileSync('bypass.js')
 
 
 // http://stackoverflow.com/a/34597104/586382
@@ -17,14 +14,24 @@ const bypass = fs.readFileSync('bypass.js')
 // This trick ensures that when script is executed using `npm <whatever>` it is
 // run only when the command is `npm publish`.
 const npm_config_argv = process.env.npm_config_argv
-if(npm_config_argv && JSON.parse(npm_config_argv).original[0] === 'publish')
+if(npm_config_argv && JSON.parse(npm_config_argv).original[0] === 'publish'
+|| process.argv[2] === '--force')
+{
+  const DIR = 'bin'
+
   fs.mkdir(DIR, function(err)
   {
     if(err && err.code !== 'EEXIST') throw err
 
-    // Re-create the symlinks stubs
-    bins.forEach(function(file)
+    fs.readFile('resources/bypass.js', function(err, bypass)
     {
-      fs.writeFileSync(DIR+'/'+file, bypass, {mode: 0o755})
+      if(err) throw err
+
+      // Re-create the symlinks stubs
+      Object.keys(require('../package.json').bin).forEach(function(file)
+      {
+        fs.writeFileSync(DIR+'/'+file, bypass, {mode: 0o755})
+      })
     })
   })
+}

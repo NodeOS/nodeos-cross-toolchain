@@ -13,7 +13,7 @@ SYMLINKS=(addr2line ar as c++filt elfedit gprof ld ld.bfd nm objcopy objdump \
 
 for i in "${SYMLINKS[@]}"
 do
-  cp bypass.js bin/$i || exit 1
+  cp resources/bypass.js bin/$i || exit 1
 done
 
 
@@ -25,7 +25,6 @@ readlink /lib/ld-linux.so.2 | grep musl || exit 0
 # Update the bypass symbolic links to point to the cross-toolchain binaries
 #
 
-PLATFORM=
 CPU=
 
 source scripts/adjustEnvVars.sh || exit $?

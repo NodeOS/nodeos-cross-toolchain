@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
-var join = require('path').join
+const join = require('path').join
 
-var async   = require('async')
-var fs      = require('fs-extra')
-var manager = require('download-manager')
-var os      = require('os')
+const async   = require('async')
+const fs      = require('fs-extra')
+const manager = require('download-manager')
 
 
 const DEPS='deps'
+const PATCHES='patches'
 
 const options = {path: DEPS}
 
@@ -17,9 +17,8 @@ const options = {path: DEPS}
 
 const BINUTILS_VERSION = "2.27"
 const GCC_VERSION      = "5.3.0"
-const LINUX_VERSION    = "4.7.1"
+const LINUX_VERSION    = "4.8.5"
 const MUSL_VERSION     = "1.1.15"
-const GLIBC_VERSION    = "2.24"
 
 
 // Source URLs
@@ -28,20 +27,19 @@ const BINUTILS_URL = "http://ftpmirror.gnu.org/binutils/binutils-"+BINUTILS_VERS
 const GCC_URL      = "http://ftpmirror.gnu.org/gcc/gcc-"+GCC_VERSION+"/gcc-"+GCC_VERSION+".tar.gz"
 const LINUX_URL    = "https://www.kernel.org/pub/linux/kernel/v4.x/linux-"+LINUX_VERSION+".tar.gz"
 const MUSL_URL     = "http://www.musl-libc.org/releases/musl-"+MUSL_VERSION+".tar.gz"
-const GLIBC_URL    = "http://ftpmirror.gnu.org/glibc/glibc-"+GLIBC_VERSION+".tar.gz"
 
 
 // Checksums
 
-const LINUX_SHA256 = '3bf449c75723494a55e623afb4e50bca5795f213a51c87e6c031a72cc74f7359'
+const LINUX_SHA256 = 'b8dd5365c9f4319d41781f65f27b116ae7981d791bbad46491617fee0f87f8cc'
 
 
 // Patch GCC to work with musl
 const GCC_PATCH_URL = 'https://raw.githubusercontent.com/GregorR/musl-cross/master/patches/gcc-'+GCC_VERSION+'-musl.diff'
 
 
-// Patch Linux to use GLIBC headers
-const LINUX_PATCH_PATH = 'patches/linux-darwin.diff'
+// Patch Linux to use musl headers on OS X
+const LINUX_DARWIN_PATCH_PATH = PATCHES+'/linux-darwin.diff'
 
 
 //
@@ -89,43 +87,20 @@ function download_prerequisites(callback)
   manager(downloads, options, callback)
 }
 
-
-//
-// include glibc headers in linux
-//
-
+// Copy musl headers for compilation on OS X
 function copy_headers(callback)
 {
-  const GLIBC_PATH = DEPS+'/glibc'
-  const TEMP_PATH = DEPS+'/glibc-temp'
+  const MUSL_INCLUDE_PATH = DEPS+'/musl/include'
+  const DARWIN_MUSL_PATH = DEPS+'/darwin-musl'
 
-  async.series(
-  [
-    function(callback)
-    {
-      async.each(['bits', 'elf', 'gnu', 'string'].map(function(item)
-      {
-        return GLIBC_PATH+'/'+item
-      }),
-      fs.mkdirp, callback)
-    },
-    function(callback)
-    {
-      fs.outputFile(GLIBC_PATH+'/bits/types.h', '', callback)
-    },
-    function(callback)
-    {
-      async.eachOf(require('../resources/copy_headers.json'),
-      function(dest, src, callback)
-      {
-        fs.copy(TEMP_PATH+'/'+src, GLIBC_PATH+'/'+dest, callback)
-      },
-      callback)
-    },
-  ],
+
+  async.each(require('../resources/darwin-headers.json'),
+  function(file, callback)
+  {
+    fs.copy(MUSL_INCLUDE_PATH+'/'+file, DARWIN_MUSL_PATH+'/'+file, callback)
+  },
   callback)
 }
-
 
 //
 // binutils, gcc, Linux & musl
@@ -157,15 +132,9 @@ var downloads =
 
 if(process.platform === 'darwin')
 {
-  downloads[2].patch = LINUX_PATCH_PATH
-
-  downloads.push({
-    name: 'glibc-temp',
-    url: GLIBC_URL,
-    action: copy_headers
-  })
+  downloads[2].patch = LINUX_DARWIN_PATCH_PATH
+  downloads[3].action = copy_headers
 }
-
 
 manager(downloads, options, function(error)
 {

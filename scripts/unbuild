@@ -1,4 +1,8 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-rm -rf build/ deps/
-rm -rf bin/ lib/ libexec/ share/ *-nodeos-linux-musl/
+PRODUCTS=(bin lib libexec share *-nodeos-linux-musl*)
+
+rm -rf build/ deps/   || exit 1
+rm -rf ${PRODUCTS[@]} || exit 2
+
+npm run prepublish -- --force || exit 10
