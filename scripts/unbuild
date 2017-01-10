@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PRODUCTS=(bin lib libexec share *-nodeos-linux-musl*)
+PRODUCTS=(bin lib libexec prebuilds share *-nodeos-linux-musl*)
 
 rm -rf build/ deps/   || exit 1
 rm -rf ${PRODUCTS[@]} || exit 2
