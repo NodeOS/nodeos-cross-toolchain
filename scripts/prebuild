@@ -90,14 +90,10 @@ function download_prerequisites(callback)
 // Copy musl headers for compilation on OS X
 function copy_headers(callback)
 {
-  const MUSL_INCLUDE_PATH = DEPS+'/musl/include'
-  const DARWIN_MUSL_PATH = DEPS+'/darwin-musl'
-
-
   async.each(require('../resources/darwin-headers.json'),
   function(file, callback)
   {
-    fs.copy(MUSL_INCLUDE_PATH+'/'+file, DARWIN_MUSL_PATH+'/'+file, callback)
+    fs.copy(DEPS+'/musl/include/'+file, DEPS+'/darwin-musl/'+file, callback)
   },
   callback)
 }
