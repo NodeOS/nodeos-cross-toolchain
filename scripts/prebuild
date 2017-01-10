@@ -17,8 +17,8 @@ const options = {path: DEPS}
 
 const BINUTILS_VERSION = "2.27"
 const GCC_VERSION      = "5.3.0"
-const LINUX_VERSION    = "4.8.5"
-const MUSL_VERSION     = "1.1.15"
+const LINUX_VERSION    = "4.9.2"
+const MUSL_VERSION     = "1.1.16"
 
 
 // Source URLs
@@ -31,7 +31,7 @@ const MUSL_URL     = "http://www.musl-libc.org/releases/musl-"+MUSL_VERSION+".ta
 
 // Checksums
 
-const LINUX_SHA256 = 'b8dd5365c9f4319d41781f65f27b116ae7981d791bbad46491617fee0f87f8cc'
+const LINUX_SHA256 = '569fd6ec3d490f4bf12c48c6b1365002f279595b49080bbfb13c148fba6b3492'
 
 
 // Patch GCC to work with musl
@@ -55,16 +55,16 @@ function download_prerequisites(callback)
 
   // Source versions
 
-  const MPFR_VERSION = "3.1.4"
-  const GMP_VERSION  = "6.1.1"
-  const MPC_VERSION  = "1.0.2"
+  const MPFR_VERSION = "3.1.5"
+  const GMP_VERSION  = "6.1.2"
+  const MPC_VERSION  = "1.0.3"
 
 
   // Source URLs
 
   const MPFR_URL = "http://www.mpfr.org/mpfr-"+MPFR_VERSION+"/mpfr-"+MPFR_VERSION+".tar.gz"
   const GMP_URL  = "https://gmplib.org/download/gmp/gmp-"+GMP_VERSION+".tar.bz2"
-  const MPC_URL  = "http://ftpmirror.gnu.org/mpc/mpc-"+MPC_VERSION+".tar.gz"
+  const MPC_URL  = "https://ftp.gnu.org/gnu/mpc/mpc-"+MPC_VERSION+".tar.gz"
 
 
   var downloads =
