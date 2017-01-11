@@ -29,7 +29,7 @@ case $PLATFORM in
   ;;
 esac
 
-while getopts ":b:c:M:" opt; do
+while getopts ":b:c:M:-:" opt; do
   case $opt in
     b)
       BITS="$OPTARG"  # 32, 64
@@ -54,6 +54,39 @@ while getopts ":b:c:M:" opt; do
     ;;
   esac
 done
+
+# Get architecture from the `npm` environment variables to set the other ones
+if [[ -z "$BITS" && -z "$CPU" && -z "$MACHINE" && -z "$NODE_ARCH" ]]; then
+  NODE_ARCH=$npm_config_arch
+fi
+
+case $NODE_ARCH in
+  "")
+  ;;
+
+  arm)
+    CPU=cortex-a7
+  ;;
+
+  arm64)
+    CPU=cortex-a53
+  ;;
+
+  ia32)
+    BITS=32
+    MACHINE=pc
+  ;;
+
+  x64)
+    BITS=64
+    MACHINE=pc
+  ;;
+
+  *)
+    echo "Unknown architecture $NODE_ARCH"
+    exit 1
+  ;;
+esac
 
 # Default machine
 if [[ -z "$MACHINE" ]]; then
