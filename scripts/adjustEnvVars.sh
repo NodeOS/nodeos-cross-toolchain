@@ -227,7 +227,7 @@ function rmStep(){
 
 # Clean object dir and return the input error
 function err(){
-  printf "${RED}Error building '${OBJ_DIR}'${CLR}${NWL}" >&2
+  printf "${RED}Error building '${STEP_DIR}'${CLR}${NWL}" >&2
   rmStep $STEP_DIR
   exit $1
 }
