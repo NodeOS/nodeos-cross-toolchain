@@ -26,6 +26,9 @@ npm run build -- -b 32     && npm test -- -b 32     && rm -rf build || exit 10
 npm run build -- -b 64     && npm test -- -b 64     && rm -rf build || exit 11
 npm run build -- -M raspi2 && npm test -- -M raspi2 && rm -rf build || exit 12
 
+# Upgrade list of products
+PRODUCTS=(bin lib libexec share *-nodeos-linux-musl*)
+
 
 #
 # Pack toolchain in a node-gyp compatible way
