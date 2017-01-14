@@ -10,7 +10,7 @@ DOWNLOAD=https://github.com/NodeOS/nodeos-cross-toolchain/releases/download/v{ve
 # Download or build cross-toolchain
 #
 
-prebuild-install -d $DOWNLOAD || npm run build || exit 10
+prebuild-install -d $DOWNLOAD || (buildDependencies && npm run build) || exit 10
 
 #
 # Restore binary symlinks
