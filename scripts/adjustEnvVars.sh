@@ -9,10 +9,9 @@ NWL="\n"
 ORIGINAL_CFLAGS="$CFLAGS"
 ORIGINAL_CXXFLAGS="$CXXFLAGS"
 
-PLATFORM=$(uname -s)
-
 # Platform dependent commands
-case $PLATFORM in
+UNAME_S=$(uname -s)
+case $UNAME_S in
   "Linux")
     RMDIR="rmdir -p --ignore-fail-on-non-empty"
     STRIP_DEBUG="strip --strip-debug"
@@ -24,7 +23,7 @@ case $PLATFORM in
     STRIP_UNNEEDED="strip -u -r -x"
   ;;
   *)
-    echo "Unsupported platform: $PLATFORM" >&2
+    echo "Unsupported platform: $UNAME_S" >&2
     exit 1
   ;;
 esac
