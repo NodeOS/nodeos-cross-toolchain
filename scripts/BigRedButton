@@ -38,11 +38,17 @@ tar -cf - ${PRODUCTS[@]} | gzip > $STEP_DIR || err 20
 
 
 #
-# Upload release to GitHub
+# Upload release to GitHub and npm
 #
 
-if [ "$GITHUB_TOKEN" ]; then
-  prebuild --upload-all $GITHUB_TOKEN || exit 30
+if [ "$BRANCH_NAME" = "master" ]; then
+  if [ "$GITHUB_TOKEN" ]; then
+    prebuild --upload-all $GITHUB_TOKEN || exit 30
+  fi
+
+  if [ "$NPM_TOKEN" ]; then
+    ci-publish
+  fi
 fi
 
 #
