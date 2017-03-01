@@ -24,7 +24,9 @@ rm -rf ${PRODUCTS[@]} || exit 1
 
 npm run build -- -b 32     && npm test -- -b 32     && rm -rf build || exit 10
 npm run build -- -b 64     && npm test -- -b 64     && rm -rf build || exit 11
-npm run build -- -M raspi2 && npm test -- -M raspi2 && rm -rf build || exit 12
+npm run build -- -M raspi  && npm test -- -M raspi  && rm -rf build || exit 12
+npm run build -- -M raspi2 && npm test -- -M raspi2 && rm -rf build || exit 13
+npm run build -- -M raspi3 && npm test -- -M raspi3 && rm -rf build || exit 14
 
 # Upgrade list of products
 PRODUCTS=(bin lib libexec share *-nodeos-linux-musl*)
