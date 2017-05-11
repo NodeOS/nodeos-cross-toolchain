@@ -2,6 +2,8 @@
 
 # NodeOS cross toolchain
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/NodeOS/nodeos-cross-toolchain.svg)](https://greenkeeper.io/)
+
 This package generate a cross-compiler based on [gcc](https://gcc.gnu.org/) and
 [musl](musl-libc.org) ready to use on the NodeOS build system, but could be used
 by other systems. You can be able to configure the target of the cross-compiler
