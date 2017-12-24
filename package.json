@@ -49,7 +49,7 @@
   "author": "Jesús Leganés Combarro 'piranna' <piranna@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "builddependencies": "^0.0.1",
+    "builddependencies": "^0.0.2",
     "prebuild-install": "2.1.2"
   },
   "buildDependencies": [
