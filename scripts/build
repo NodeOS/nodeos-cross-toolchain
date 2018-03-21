@@ -41,7 +41,7 @@ OBJ_GCC_FINAL=$OBJECTS/gcc_final
 # Linux kernel headers
 #
 
-SRC_DIR=$DEPS/linux
+SRC_DIR=${LINUX:-`node -p "require('nodeos-linux')"`/linux}
 STEP_DIR=$KERNEL_HEADERS
 
 if [[ ! -d $STEP_DIR ]]; then

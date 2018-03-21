@@ -17,7 +17,6 @@ const options = {path: DEPS}
 
 const BINUTILS_VERSION = "2.27"
 const GCC_VERSION      = "5.3.0"
-const LINUX_VERSION    = "4.9.2"
 const MUSL_VERSION     = "1.1.16"
 
 
@@ -25,21 +24,11 @@ const MUSL_VERSION     = "1.1.16"
 
 const BINUTILS_URL = "http://ftpmirror.gnu.org/binutils/binutils-"+BINUTILS_VERSION+".tar.gz"
 const GCC_URL      = "http://ftpmirror.gnu.org/gcc/gcc-"+GCC_VERSION+"/gcc-"+GCC_VERSION+".tar.gz"
-const LINUX_URL    = "https://www.kernel.org/pub/linux/kernel/v4.x/linux-"+LINUX_VERSION+".tar.gz"
 const MUSL_URL     = "http://www.musl-libc.org/releases/musl-"+MUSL_VERSION+".tar.gz"
-
-
-// Checksums
-
-const LINUX_SHA256 = '569fd6ec3d490f4bf12c48c6b1365002f279595b49080bbfb13c148fba6b3492'
 
 
 // Patch GCC to work with musl
 const GCC_PATCH_URL = 'https://raw.githubusercontent.com/GregorR/musl-cross/master/patches/gcc-'+GCC_VERSION+'-musl.diff'
-
-
-// Patch Linux to use musl headers on OS X
-const LINUX_DARWIN_PATCH_PATH = PATCHES+'/linux-darwin.diff'
 
 
 //
@@ -99,7 +88,7 @@ function copy_headers(callback)
 }
 
 //
-// binutils, gcc, Linux & musl
+// binutils, gcc & musl
 //
 
 var downloads =
@@ -116,21 +105,12 @@ var downloads =
     action: download_prerequisites
   },
   {
-    name: 'linux',
-    url: LINUX_URL,
-    sha256: LINUX_SHA256
-  },
-  {
     name: 'musl',
     url: MUSL_URL
   }
 ]
 
-if(process.platform === 'darwin')
-{
-  downloads[2].patch = LINUX_DARWIN_PATCH_PATH
-  downloads[3].action = copy_headers
-}
+if(process.platform === 'darwin') downloads[2].action = copy_headers
 
 manager(downloads, options, function(error)
 {
