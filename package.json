@@ -50,7 +50,7 @@
   "license": "MIT",
   "dependencies": {
     "builddependencies": "^0.0.2",
-    "prebuild-install": "2.5.1"
+    "prebuild-install": "2.5.3"
   },
   "buildDependencies": [
     "async",
